@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local Help Finder - Home</title>
+  <link rel="stylesheet" href="./LHF_Front_end/css/index.css" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+
+<body>
+  <div class="container">
+    <!-- LEFT SECTION -->
+    <div class="left-section">
+      <!-- Navigation -->
+      <nav class="landing-nav">
+        <a href="index.html" class="nav-brand">
+          <i class="fas fa-tools"></i> Local Help Finder
+        </a>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="./LHF_Front_end/pages/contact.html">Contact Us</a>
+        </div>
+      </nav>
+
+      <div class="content">
+        <h1>Local Help Finder</h1>
+        <p class="tagline">Your trusted platform for home services</p>
+        <p class="description">
+          Connect with verified professionals or offer your services
+        </p>
+      </div>
+    </div>
+
+    <!-- RIGHT SECTION -->
+    <div class="right-section">
+      <div class="login-box">
+        <h2>Welcome to Local Help Finder</h2>
+        <p class="subtitle">Choose your account type to continue</p>
+
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="switchTab('customer')">
+            <i class="fas fa-user"></i> Customer
+          </button>
+          <button class="auth-tab" onclick="switchTab('worker')">
+            <i class="fas fa-wrench"></i> Worker
+          </button>
+        </div>
+
+        <!-- Customer -->
+        <div id="customerTab" class="tab-content active">
+          <h3 style="text-align: center; margin-bottom: 20px">
+            <i class="fas fa-user"></i> Customer Login
+          </h3>
+          <form id="customerLoginForm">
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="customerEmail" placeholder="Enter your email" required />
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="customerPassword" placeholder="Enter password" required minlength="6"
+                maxlength="6" />
+            </div>
+            <button class="btn-primary">Login as Customer</button>
+          </form>
+          <div class="auth-footer">
+            Don’t have an account? <a href="./LHF_Front_end/pages/customer_signup.html">Sign Up</a>
+          </div>
+        </div>
+
+        <!-- Worker -->
+        <div id="workerTab" class="tab-content">
+          <h3 style="text-align: center; margin-bottom: 20px">
+            <i class="fas fa-wrench"></i> Worker Login
+          </h3>
+          <form id="workerLoginForm">
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="workerEmail" placeholder="Enter your email" required />
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="workerPassword" placeholder="Enter password" required minlength="6"
+                maxlength="6" />
+            </div>
+            <button class="btn-primary">Login as Worker</button>
+          </form>
+          <div class="auth-footer">
+            Don’t have an account? <a href="./LHF_Front_end/pages/worker_signup.html">Sign Up</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./LHF_Front_end/js/config.js"></script>
+  <script src="./LHF_Front_end/js/index_auth.js"></script>
+  <script>
+    function switchTab(type) {
+      const tabs = document.querySelectorAll(".auth-tab");
+      const contents = document.querySelectorAll(".tab-content");
+
+      tabs.forEach((t) => t.classList.remove("active"));
+      contents.forEach((c) => c.classList.remove("active"));
+
+      if (type === "customer") {
+        tabs[0].classList.add("active");
+        document.getElementById("customerTab").classList.add("active");
+      } else {
+        tabs[1].classList.add("active");
+        document.getElementById("workerTab").classList.add("active");
+      }
+    }
+  </script>
+</body>
+
+</html>
