@@ -1,15 +1,29 @@
 class AuthAPI {
+    static async handleResponse(response) {
+        const contentType = response.headers.get("content-type");
+        let data;
+
+        if (contentType && contentType.includes("application/json")) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            console.error("Non-JSON response received:", text);
+            throw new Error(`Server Error: ${response.status} - ${response.statusText}`);
+        }
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Request failed");
+        }
+        return data;
+    }
+
     static async loginCustomer(email, password) {
         const response = await fetch(`${API_BASE_URL}/customers/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || "Login failed");
-        }
-        return await response.json();
+        return await this.handleResponse(response);
     }
 
     static async registerCustomer(data) {
@@ -18,11 +32,7 @@ class AuthAPI {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || "Registration failed");
-        }
-        return await response.json();
+        return await this.handleResponse(response);
     }
 
     static async loginWorker(email, password) {
@@ -31,11 +41,7 @@ class AuthAPI {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || "Login failed");
-        }
-        return await response.json();
+        return await this.handleResponse(response);
     }
 
     static async registerWorker(data) {
@@ -44,11 +50,7 @@ class AuthAPI {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || "Registration failed");
-        }
-        return await response.json();
+        return await this.handleResponse(response);
     }
 }
 
