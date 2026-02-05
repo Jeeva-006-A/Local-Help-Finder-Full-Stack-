@@ -2,7 +2,7 @@ const customerId = localStorage.getItem('user_id');
 const userType = localStorage.getItem('user_type');
 
 if (!customerId || userType !== 'customer') {
-    window.location.href = '../pages/customer_login.html';
+    window.location.href = 'customer_login.html';
 }
 
 document.addEventListener('DOMContentLoaded', () => {

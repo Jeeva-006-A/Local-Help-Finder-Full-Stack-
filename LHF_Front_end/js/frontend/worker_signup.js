@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 await AuthAPI.registerWorker(data);
                 alert("Registration Successful! Please login.");
-                window.location.href = "../pages/worker_login.html";
+                window.location.href = "worker_login.html";
             } catch (error) {
                 console.error("Error:", error);
                 if (error.message === "Failed to fetch") {

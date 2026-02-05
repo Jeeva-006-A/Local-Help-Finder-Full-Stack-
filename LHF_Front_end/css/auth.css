@@ -308,15 +308,24 @@ h2 {
     }
 }
 
+/* Responsive Enhancements */
+@media (max-width: 1024px) {
+    .auth-left h1 {
+        font-size: 2.5em;
+    }
+}
+
 @media (max-width: 968px) {
     .auth-container {
         flex-direction: column;
+        height: auto;
     }
 
     .auth-left {
-        padding: 40px 20px;
-        min-height: 250px;
+        padding: 60px 24px;
+        min-height: 300px;
         height: auto;
+        text-align: center;
     }
 
     .auth-left h1 {
@@ -326,9 +335,36 @@ h2 {
     .auth-right {
         padding: 40px 20px;
         height: auto;
+        align-items: center;
+    }
+
+    .auth-box {
+        margin-top: 0;
+        max-width: 100%;
     }
 
     h2 {
         font-size: 1.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-left {
+        padding: 40px 20px;
+    }
+
+    .auth-right {
+        padding: 30px 16px;
+    }
+
+    .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .btn-primary {
+        font-size: 1em;
+        padding: 12px;
     }
 }

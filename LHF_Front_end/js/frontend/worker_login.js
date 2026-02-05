@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('worker_category', result.category);
 
                 alert("Login Successful!");
-                window.location.href = "../pages/worker_dashboard.html";
+                window.location.href = "worker_dashboard.html";
             } catch (error) {
                 console.error("Error:", error);
                 if (error.message === "Failed to fetch") {

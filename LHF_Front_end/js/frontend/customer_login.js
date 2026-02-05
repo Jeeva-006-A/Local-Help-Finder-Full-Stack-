@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('user_type', 'customer');
 
                 alert("Login Successful!");
-                window.location.href = "../pages/customer_dashboard.html";
+                window.location.href = "customer_dashboard.html";
             } catch (error) {
                 console.error("Error:", error);
                 if (error.message === "Failed to fetch") {

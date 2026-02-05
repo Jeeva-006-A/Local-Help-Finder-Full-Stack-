@@ -508,10 +508,7 @@ body {
     flex-wrap: wrap;
 }
 
-i.fas {
-    /* Color handled by context usually, but for general icons in text: */
-    /* color: var(--primary-color); - optional if we want everything blue */
-}
+
 
 /* Navbar icons */
 .dashboard-nav i,
@@ -520,9 +517,7 @@ i.fas {
 }
 
 /* Stats icon */
-.stat-icon i {
-    /* controlled by parent color property now */
-}
+
 
 /* Section headings */
 .content-section h3 i {
@@ -582,30 +577,86 @@ i.fas {
 }
 
 /* Responsive */
+/* Responsive Enhancements */
+@media (max-width: 1024px) {
+    .container {
+        padding: 0 16px;
+    }
+}
+
 @media (max-width: 768px) {
+    .dashboard-nav {
+        padding: 12px 0;
+    }
+
     .nav-content {
         flex-direction: column;
         gap: 16px;
+        text-align: center;
     }
 
-    .form-row {
-        grid-template-columns: 1fr;
+    .nav-right {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dashboard-container {
+        padding: 20px 0;
     }
 
     .stats-grid {
         grid-template-columns: 1fr;
     }
 
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .content-section {
+        padding: 24px 16px;
+    }
+
     .booking-actions {
         flex-direction: column;
+        gap: 10px;
     }
 
     .btn-small {
         width: 100%;
+        text-align: center;
     }
 
     .profile-sidebar {
         width: 100%;
         right: -100%;
+    }
+
+    .booking-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-content h2 {
+        font-size: 1.1em;
+    }
+
+    .btn-profile span:not(.profile-icon) {
+        display: none;
+    }
+
+    .stat-card {
+        padding: 16px;
+    }
+
+    .stat-number {
+        font-size: 1.5em;
+    }
+
+    .content-section h3 {
+        font-size: 1.2em;
     }
 }

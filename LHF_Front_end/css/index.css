@@ -346,22 +346,83 @@ h2 {
     text-decoration: underline;
 }
 
+/* Mobile Breakpoints & Responsive Enhancements */
+@media (max-width: 1024px) {
+    h1 {
+        font-size: 3em;
+    }
+
+    .landing-nav {
+        padding: 20px 30px;
+    }
+}
+
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
     }
 
+    .landing-nav {
+        background: var(--primary-gradient);
+        position: relative;
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+
+    body.worker-mode .landing-nav {
+        background: var(--worker-gradient);
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+        gap: 16px;
+    }
+
     .left-section {
-        padding: 40px 20px;
-        min-height: 300px;
+        padding: 60px 24px;
+        min-height: 350px;
         text-align: center;
     }
 
     .right-section {
-        padding: 40px 20px;
+        padding: 30px 20px;
     }
 
     h1 {
         font-size: 2.5em;
+    }
+
+    .tagline {
+        font-size: 1.25em;
+    }
+
+    .login-box {
+        padding: 40px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2.2em;
+    }
+
+    .nav-brand {
+        font-size: 1.2em;
+    }
+
+    .nav-links a {
+        font-size: 0.9em;
+    }
+
+    .auth-tab {
+        padding: 10px 8px;
+        font-size: 0.85em;
+    }
+
+    .btn-primary {
+        padding: 12px;
     }
 }

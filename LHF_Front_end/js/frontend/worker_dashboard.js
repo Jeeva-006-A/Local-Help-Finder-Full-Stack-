@@ -3,7 +3,7 @@ const userType = localStorage.getItem('user_type');
 const workerCategory = localStorage.getItem('worker_category');
 
 if (!workerId || userType !== 'worker') {
-    window.location.href = '../pages/worker_login.html';
+    window.location.href = 'worker_login.html';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
