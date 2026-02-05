@@ -13,7 +13,11 @@ if not DB_URL:
 if DB_URL and DB_URL.startswith("postgres://"):
     DB_URL = DB_URL.replace("postgres://", "postgresql://", 1)
 
-engine = create_engine(DB_URL)
+engine = create_engine(
+    DB_URL,
+    pool_pre_ping=True,  # Check connection health before using
+    pool_recycle=300,    # Refresh connections every 5 minutes
+)
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
