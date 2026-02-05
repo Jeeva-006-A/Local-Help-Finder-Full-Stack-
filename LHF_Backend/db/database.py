@@ -7,11 +7,15 @@ DB_URL = os.getenv("DATABASE_URL")
 
 if not DB_URL:
     # User-provided Supabase Session Pooler URL
-    DB_URL = "postgresql://postgres.rrlkbnrbhvrurlnecfqx:Jeeva_2910_A@aws-1-ap-south-1.pooler.supabase.com:5432/postgres"
+    DB_URL = "postgresql+psycopg2://postgres.rrlkbnrbhvrurlnecfqx:Jeeva_2910_A@aws-1-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require"
 
 # For compatibility with some platforms (like Vercel/Supabase), swap postgres:// to postgresql://
 if DB_URL and DB_URL.startswith("postgres://"):
     DB_URL = DB_URL.replace("postgres://", "postgresql://", 1)
+
+if "?" not in DB_URL:
+    DB_URL += "?sslmode=require"
+
 
 engine = create_engine(
     DB_URL,

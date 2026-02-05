@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -5,9 +6,16 @@ from db.database import Base, engine
 from routers import customer, worker, booking, contact
 import traceback
 
-Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Create tables on startup safely
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"Database initialization error: {e}")
+    yield
 
-app = FastAPI(title="Local Help Finder")
+app = FastAPI(title="Local Help Finder", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,13 +25,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def read_root():
+    return {"status": "running", "service": "Local Help Finder API"}
+
 # Debug Exception Handler
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    print(f"Global Error Catch: {str(exc)}")
     return JSONResponse(
         status_code=500,
-        content={"detail": f"Internal Server Error: {str(exc)}", "traceback": traceback.format_exc()},
+        content={
+            "detail": f"Internal Server Error: {str(exc)}",
+            "type": type(exc).__name__,
+            "traceback": traceback.format_exc()
+        },
     )
+
 
 # Create a main API router with prefix /api
 api_router = APIRouter(prefix="/api")
