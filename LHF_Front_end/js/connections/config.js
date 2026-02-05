@@ -1,4 +1,6 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
+// Detect if we are running locally or on a deployed server
+const API_BASE_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+    ? "http://127.0.0.1:8000"
+    : window.location.origin + "/api";
 
-// Export for usage if using modules, but for script tags it will be global
 window.API_BASE_URL = API_BASE_URL;
