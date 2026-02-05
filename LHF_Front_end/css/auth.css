@@ -1,0 +1,334 @@
+:root {
+    --primary-color: #8b5cf6;
+    /* Violet 500 - Customer Theme */
+    --primary-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    --worker-color: #0d9488;
+    /* Teal 600 */
+    --worker-gradient: linear-gradient(135deg, #0d9488 0%, #115e59 100%);
+    --text-dark: #1e293b;
+    /* Slate 800 */
+    --text-light: #64748b;
+    /* Slate 500 */
+    --white: #ffffff;
+    --bg-light: #f8fafc;
+    /* Slate 50 */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    background: var(--bg-light);
+    color: var(--text-dark);
+}
+
+.auth-container {
+    display: flex;
+    height: 100vh;
+}
+
+.auth-left {
+    flex: 1;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    transition: background 0.5s ease;
+}
+
+/* Worker specific gradient (Green) */
+.auth-left.worker-gradient {
+    background: var(--worker-gradient);
+}
+
+.auth-left h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.8s ease;
+    font-weight: 700;
+}
+
+.tagline {
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    opacity: 0.95;
+    animation: fadeInUp 1s ease;
+}
+
+.description {
+    font-size: 1.1em;
+    opacity: 0.85;
+    animation: fadeInUp 1.2s ease;
+    line-height: 1.6;
+}
+
+.auth-right {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 50px;
+    background: white;
+    height: 100vh;
+    overflow: auto;
+}
+
+.auth-box {
+    width: 100%;
+    max-width: 480px;
+    margin-top: 40px;
+    /* Slight offset for better optical centering */
+    animation: fadeInUp 0.6s ease;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-color);
+    text-decoration: none;
+    margin-bottom: 30px;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.back-link:hover {
+    color: #6d28d9;
+}
+
+/* Worker Link Toggle - handled if parent has class or via specific selectors */
+/* Since auth pages are separate, we can use body classes or just specific button overrides */
+
+h2 {
+    font-size: 2.2em;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: var(--text-light);
+    margin-bottom: 35px;
+    font-size: 1.05em;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.95em;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: all 0.2s;
+    font-family: inherit;
+    background: #fdfdfd;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    background: white;
+}
+
+/* Worker Input Focus */
+.worker-form .form-group input:focus,
+.worker-form .form-group select:focus,
+.worker-form .form-group textarea:focus {
+    border-color: var(--worker-color);
+    box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.1);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.95em;
+    color: var(--text-light);
+}
+
+.checkbox input {
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.worker-form .checkbox input {
+    accent-color: var(--worker-color);
+}
+
+.forgot-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.95em;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.worker-form .forgot-link {
+    color: var(--worker-color);
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+    box-shadow: 0 4px 6px rgba(139, 92, 246, 0.2);
+}
+
+.btn-primary:hover {
+    background: #7c3aed;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px rgba(139, 92, 246, 0.3);
+}
+
+/* Worker Theme Button */
+.btn-primary.worker-btn {
+    background: var(--worker-color);
+    box-shadow: 0 4px 6px rgba(47, 133, 90, 0.2);
+}
+
+.btn-primary.worker-btn:hover {
+    background: #276749;
+    box-shadow: 0 6px 10px rgba(47, 133, 90, 0.3);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 25px;
+    color: var(--text-light);
+    font-size: 0.95em;
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.worker-form .auth-footer a,
+.auth-footer a.worker-link {
+    color: var(--worker-color);
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.divider {
+    text-align: center;
+    margin: 24px 0;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 42%;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+.divider span {
+    background: white;
+    padding: 0 10px;
+    color: var(--text-light);
+    font-size: 0.9em;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 968px) {
+    .auth-container {
+        flex-direction: column;
+    }
+
+    .auth-left {
+        padding: 40px 20px;
+        min-height: 250px;
+        height: auto;
+    }
+
+    .auth-left h1 {
+        font-size: 2.2em;
+    }
+
+    .auth-right {
+        padding: 40px 20px;
+        height: auto;
+    }
+
+    h2 {
+        font-size: 1.8em;
+    }
+}

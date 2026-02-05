@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Worker Dashboard - Local Help Finder </title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="../css/worker_dashboard.css" />
+</head>
+
+<body>
+  <!-- Dashboard Navigation -->
+  <nav class="dashboard-nav">
+    <div class="container">
+      <div class="nav-content">
+        <h2>
+          <i class="fas fa-wrench"></i>
+          Local Help Finder - Worker Dashboard
+        </h2>
+
+        <div class="nav-right">
+          <button class="btn-profile" onclick="toggleProfile()">
+            <span class="profile-icon">
+              <i class="fas fa-user"></i>
+            </span>
+
+            <span>My Profile</span>
+          </button>
+          <a href="../index.html" class="btn btn-logout">Logout</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Profile Sidebar -->
+  <div class="profile-sidebar" id="profileSidebar">
+    <div class="profile-header">
+      <h3><i class="fas fa-user"></i> My Profile</h3>
+
+      <button class="close-profile" onclick="toggleProfile()">×</button>
+    </div>
+    <div class="profile-content">
+      <div class="profile-field">
+        <label>Full Name</label>
+
+        <p id="viewWName">Worker Name</p>
+        <input type="text" id="editWName" style="display: none" />
+      </div>
+
+      <div class="profile-field">
+        <label>Email Address</label>
+        <p>worker@example.com</p>
+      </div>
+      <div class="profile-field">
+        <label>Phone Number</label>
+
+        <p id="viewWPhone">+91 9876543210</p>
+        <input type="text" id="editWPhone" style="display: none" />
+      </div>
+
+      <div class="profile-field">
+        <label>Service Category</label>
+        <p id="profileCategory">Plumber</p>
+      </div>
+      <div class="profile-field">
+        <label>Experience</label>
+        <p>5 Years</p>
+      </div>
+      <div class="profile-field">
+        <label>Address</label>
+
+        <!-- view mode -->
+        <p id="viewWAddress">Chennai, Tamil Nadu</p>
+
+        <!-- edit mode -->
+        <textarea id="editWAddress" style="display: none"></textarea>
+      </div>
+
+      <div class="profile-field">
+        <label>Member Since</label>
+        <p>December 2024</p>
+      </div>
+      <div class="profile-field">
+        <label>Account Status</label>
+        <p><span class="badge badge-accepted">Active</span></p>
+      </div>
+      <button class="btn btn-secondary btn-full" style="margin-top: 20px" onclick="enableWorkerEdit()">
+        <i class="fas fa-edit"></i> Edit Profile
+      </button>
+
+      <button class="btn btn-primary btn-full profile-save-btn" style="display: none; margin-top: 15px"
+        onclick="saveWorkerProfile()">
+        Save Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="toggleProfile()"></div>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-container">
+    <div class="container">
+      <!-- Category Info Banner -->
+      <div class="category-banner">
+        <div class="category-icon" id="categoryIcon">
+          <i class="fas fa-faucet"></i>
+        </div>
+
+        <div class="category-info">
+          <h3>
+            Your Service Category: <span id="categoryName">PLUMBER</span>
+          </h3>
+          <p>
+            You will only receive booking requests for
+            <strong id="categoryType">Plumber</strong> services
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
+          <div class="stat-info">
+            <h3>Total Jobs</h3>
+            <p class="stat-number" id="totalJobs">0</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-bell"></i></div>
+          <div class="stat-info">
+            <h3>New Requests</h3>
+            <p class="stat-number" id="newRequests">0</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+          <div class="stat-info">
+            <h3>Accepted Jobs</h3>
+            <p class="stat-number" id="acceptedJobs">0</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-check"></i></div>
+          <div class="stat-info">
+            <h3>Completed Jobs</h3>
+            <p class="stat-number" id="completedJobs">0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="dashboard-main">
+        <!-- Incoming Bookings Section - PLUMBER JOBS -->
+        <section class="content-section" id="plumberJobs" style="display: none">
+          <h3><i class="fas fa-clipboard-list"></i> Incoming Plumber Jobs</h3>
+          <div id="plumber-jobs-container"></div>
+        </section>
+
+        <!-- Incoming Bookings Section - ELECTRICIAN JOBS -->
+        <section class="content-section" id="electricianJobs" style="display: none">
+          <h3>
+            <i class="fas fa-clipboard-list"></i> Incoming Electrician Jobs
+          </h3>
+          <div id="electrician-jobs-container"></div>
+        </section>
+
+        <!-- Incoming Bookings Section - MECHANIC JOBS -->
+        <section class="content-section" id="mechanicJobs" style="display: none">
+          <h3>
+            <i class="fas fa-clipboard-list"></i> Incoming Mechanic Jobs
+          </h3>
+          <div id="mechanic-jobs-container"></div>
+        </section>
+        <!-- Job History Section -->
+        <section id="jobHistory" class="content-section" style="display: none; margin-top: 30px;">
+          <h3><i class="fas fa-history"></i> Job History</h3>
+          <div id="historyList">
+            <!-- Accepted jobs will appear here -->
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/connections/config.js"></script>
+  <script src="../js/connections/worker.js"></script>
+  <script src="../js/connections/bookings.js"></script>
+  <script src="../js/frontend/worker_dashboard.js"></script>
+</body>
+
+</html>

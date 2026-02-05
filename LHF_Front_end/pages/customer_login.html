@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Login - Local Help Finder </title>
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div>
+                <h1> Local Help Finder </h1>
+                <p class="tagline">Your trusted platform for home services</p>
+                <p class="description">Book verified professionals instantly</p>
+            </div>
+        </div>
+
+        <div class="auth-right">
+            <div class="auth-box">
+                <a href="/index.html" class="back-link"> Back to Home</a>
+
+                <h2>Customer Login</h2>
+                <p class="subtitle">Welcome back! Login to your account</p>
+
+                <form id="customerLoginForm">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="Enter password" required minlength="6"
+                            maxlength="6">
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox">
+                            <input type="checkbox">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" class="forgot-link">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Login</button>
+                </form>
+
+                <div class="auth-footer">
+                    Don't have an account? <a href="../pages/customer_signup.html">Sign Up</a>
+                </div>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <div class="auth-footer">
+                    Are you a service provider? <a href="../pages/worker_login.html">Login as Worker</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/connections/config.js"></script>
+    <script src="../js/connections/auth.js"></script>
+    <script src="../js/frontend/customer_login.js"></script>
+</body>
+
+</html>

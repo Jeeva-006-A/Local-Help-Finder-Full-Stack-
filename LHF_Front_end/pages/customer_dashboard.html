@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Dashboard - Local Help Finder</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <link rel="stylesheet" href="../css/customer_dashboard.css" />
+</head>
+
+<body>
+  <!-- Dashboard Navigation -->
+  <nav class="dashboard-nav">
+    <div class="container">
+      <div class="nav-content">
+        <h2>
+          <i class="fas fa-home"></i> Local Help Finder - Customer Dashboard
+        </h2>
+        <div class="nav-right">
+          <button class="btn-profile" onclick="toggleProfile()">
+            <span class="profile-icon"><i class="fas fa-user"></i></span>
+            <span>My Profile</span>
+          </button>
+          <a href="../index.html" class="btn btn-logout">Logout</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Profile Sidebar -->
+  <div class="profile-sidebar" id="profileSidebar">
+    <div class="profile-header">
+      <h3><i class="fas fa-user"></i> My Profile</h3>
+      <button class="close-profile" onclick="toggleProfile()">×</button>
+    </div>
+
+    <div class="profile-content">
+      <div class="profile-field">
+        <label>Full Name</label>
+
+        <!-- view mode -->
+        <p id="viewName">Customer Name</p>
+
+        <!-- edit mode -->
+        <input type="text" id="editName" style="display: none" />
+      </div>
+
+      <div class="profile-field">
+        <label>Email Address</label>
+        <p id="viewEmail">Loading...</p>
+      </div>
+      <div class="profile-field">
+        <label>Phone Number</label>
+
+        <p id="viewPhone">+91 9123456789</p>
+
+        <input type="text" id="editPhone" style="display: none" />
+      </div>
+
+      <div class="profile-field">
+        <label>Address</label>
+
+        <p id="viewAddress">123, Anna Nagar, Chennai</p>
+
+        <textarea id="editAddress" style="display: none"></textarea>
+      </div>
+
+      <div class="profile-field">
+        <label>Account Status</label>
+        <p><span class="badge badge-accepted">Active</span></p>
+      </div>
+
+      <button class="btn btn-secondary btn-full" style="margin-top: 20px" onclick="enableEdit()">
+        <i class="fas fa-edit"></i> Edit Profile
+      </button>
+      <button class="btn btn-primary btn-full profile-save-btn" style="display: none; margin-top: 15px"
+        onclick="saveProfile()">
+        Save Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="toggleProfile()"></div>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-container">
+    <div class="container">
+      <!-- Quick Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+          <div class="stat-info">
+            <h3>Completed Services</h3>
+            <p class="stat-number" id="completedCount">0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="dashboard-main">
+        <!-- Book Service Section -->
+        <section class="content-section">
+          <h3><i class="fas fa-edit"></i> Book a New Service</h3>
+
+          <form class="booking-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="service">Select Service *</label>
+                <select id="service" required>
+                  <option value="">Choose a service</option>
+                  <option value="plumber">Plumber</option>
+                  <option value="electrician">Electrician</option>
+                  <option value="mechanic">Mechanic</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="problem">Describe Your Problem *</label>
+              <textarea id="problem" placeholder="Tell us about the issue in detail..." rows="4" required></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="date">Date *</label>
+                <input type="date" id="date" required />
+              </div>
+
+              <div class="form-group">
+                <label for="time">Time *</label>
+                <select id="time" required>
+                  <option value="">Select time slot</option>
+                  <option value="09:00 AM - 11:00 AM">
+                    09:00 AM - 11:00 AM
+                  </option>
+                  <option value="11:00 AM - 01:00 PM">
+                    11:00 AM - 01:00 PM
+                  </option>
+                  <option value="02:00 PM - 04:00 PM">
+                    02:00 PM - 04:00 PM
+                  </option>
+                  <option value="04:00 PM - 06:00 PM">
+                    04:00 PM - 06:00 PM
+                  </option>
+                  <option value="06:00 PM - 08:00 PM">
+                    06:00 PM - 08:00 PM
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="address">Service Address *</label>
+              <textarea id="address" placeholder="Enter complete service location address with landmark..." rows="3"
+                required></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Contact Phone *</label>
+                <input type="tel" id="bookingPhone" placeholder="Enter your phone number" required minlength="10"
+                  maxlength="10" pattern="\d{10}" />
+
+              </div>
+            </div>
+
+            <div class="form-row">
+              <button class="btn btn-primary btn-full">
+                Book Service Now
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- My Bookings Section -->
+        <section class="content-section">
+          <h3><i class="fas fa-clipboard-list"></i> My Bookings</h3>
+          <div id="bookings-container">
+            <!-- Dynamic bookings will be inserted here -->
+            <p id="no-bookings-msg" style="text-align: center; color: #666; margin-top: 20px;">No bookings found.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/connections/config.js"></script>
+  <script src="../js/connections/customer.js"></script>
+  <script src="../js/connections/bookings.js"></script>
+  <script src="../js/frontend/customer_dashboard.js"></script>
+</body>
+
+</html>

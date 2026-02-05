@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Local Help Finder </title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/contact.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="navbar-brand">
+                    <i class="fas fa-house"></i> Local Help Finder
+                </div>
+                <div class="navbar-menu">
+                    <a href="../index.html">Home</a>
+                    <a href="../pages/customer_login.html">Customer Login</a>
+                    <a href="../pages/worker_login.html">Worker Login</a>
+                    <a href="contact.html" class="active">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contact Hero -->
+    <div class="contact-hero">
+        <div class="container">
+            <h1>Contact Us</h1>
+            <p>Have a question? We’d love to hear from you.</p>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="contact-container">
+        <div class="container">
+
+            <!-- Contact Info -->
+            <div class="info-section">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h3>Phone</h3>
+                    <p>+91 98765 43210</p>
+                    <small>Mon - Sat | 9 AM - 8 PM</small>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Email</h3>
+                    <p>support@Local Help Finder.com</p>
+                    <small>Reply within 24 hours</small>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-location-dot"></i>
+                    </div>
+                    <h3>Address</h3>
+                    <p>123, MG Road</p>
+                    <p>Chennai, Tamil Nadu</p>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="form-section">
+                <div class="form-container">
+                    <h2>Send Message</h2>
+                    <p class="form-subtitle">Fill the form and we’ll contact you soon</p>
+
+                    <form id="contactForm">
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" id="name" required placeholder="Your name">
+                            </div>
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" id="email" required placeholder="Your email">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Phone *</label>
+                                <input type="tel" id="phone" required placeholder="Your phone number">
+                            </div>
+                            <div class="form-group">
+                                <label>Subject *</label>
+                                <select id="subject" required>
+                                    <option value="">Select subject</option>
+                                    <option>General Inquiry</option>
+                                    <option>Booking Issue</option>
+                                    <option>Payment Issue</option>
+                                    <option>Worker Registration</option>
+                                    <option>Feedback</option>
+                                    <option>Complaint</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Message *</label>
+                            <textarea id="message" rows="5" required placeholder="Type your message"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Local Help Finder . All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="../js/connections/config.js"></script>
+    <script src="../js/connections/contact.js"></script>
+    <script src="../js/frontend/contact.js"></script>
+
+</body>
+
+</html>
