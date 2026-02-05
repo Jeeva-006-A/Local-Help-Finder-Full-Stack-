@@ -8,14 +8,15 @@ import traceback
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables on startup safely
-    try:
-        Base.metadata.create_all(bind=engine)
-    except Exception as e:
-        print(f"Database initialization error: {e}")
+    # Temporarily disabled for debugging
+    # try:
+    #     Base.metadata.create_all(bind=engine)
+    # except Exception as e:
+    #     print(f"Database initialization error: {e}")
     yield
 
 app = FastAPI(title="Local Help Finder", lifespan=lifespan)
+
 
 app.add_middleware(
     CORSMiddleware,
