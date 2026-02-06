@@ -59,7 +59,6 @@ async function loadProfile() {
         const viewWExperience = document.getElementById('viewWExperience');
         const viewWStatus = document.getElementById('viewWStatus');
 
-        if (viewName) viewName.innerText = data.full_name; // Fallback for various templates
         if (viewWName) viewWName.innerText = data.full_name;
         if (viewWEmail) viewWEmail.innerText = data.email;
         if (viewWPhone) viewWPhone.innerText = data.phone;
