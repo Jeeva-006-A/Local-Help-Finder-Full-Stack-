@@ -52,14 +52,25 @@ async function loadProfile() {
         const data = await WorkerAPI.getProfile(workerId);
 
         const viewWName = document.getElementById('viewWName');
+        const viewWEmail = document.getElementById('viewWEmail');
         const viewWPhone = document.getElementById('viewWPhone');
         const viewWAddress = document.getElementById('viewWAddress');
         const profileCategory = document.getElementById('profileCategory');
+        const viewWExperience = document.getElementById('viewWExperience');
+        const viewWStatus = document.getElementById('viewWStatus');
 
+        if (viewName) viewName.innerText = data.full_name; // Fallback for various templates
         if (viewWName) viewWName.innerText = data.full_name;
+        if (viewWEmail) viewWEmail.innerText = data.email;
         if (viewWPhone) viewWPhone.innerText = data.phone;
         if (viewWAddress) viewWAddress.innerText = data.address;
         if (profileCategory) profileCategory.innerText = data.category;
+        if (viewWExperience) viewWExperience.innerText = data.experience + " Years";
+
+        if (viewWStatus) {
+            viewWStatus.innerText = data.status.toUpperCase();
+            viewWStatus.className = `badge badge-${data.status}`;
+        }
 
         // Fill edit inputs
         const editWName = document.getElementById('editWName');

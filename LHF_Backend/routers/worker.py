@@ -131,5 +131,6 @@ def get_worker_profile(worker_id: int, db: Session = Depends(get_db)):
         "phone": worker.phone,
         "address": worker.address,
         "category": worker.category,
-        "experience": worker.experience
+        "experience": worker.experience,
+        "status": worker.status
     }
