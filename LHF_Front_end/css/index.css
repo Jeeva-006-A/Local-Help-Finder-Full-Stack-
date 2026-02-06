@@ -378,7 +378,9 @@ h2 {
     .nav-links {
         width: 100%;
         justify-content: center;
-        gap: 16px;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 0 10px;
     }
 
     .left-section {

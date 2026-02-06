@@ -354,7 +354,11 @@ h2 {
     }
 
     .auth-right {
-        padding: 30px 16px;
+        padding: 20px 12px;
+    }
+
+    .auth-box {
+        padding: 24px 16px;
     }
 
     .form-options {
@@ -365,6 +369,12 @@ h2 {
 
     .btn-primary {
         font-size: 1em;
-        padding: 12px;
+        padding: 14px;
+        width: 100%;
+    }
+
+    .btn-secondary {
+        width: 100%;
+        text-align: center;
     }
 }
