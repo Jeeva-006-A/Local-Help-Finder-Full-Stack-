@@ -112,9 +112,11 @@
       if (type === "customer") {
         tabs[0].classList.add("active");
         document.getElementById("customerTab").classList.add("active");
+        document.body.classList.remove("worker-mode");
       } else {
         tabs[1].classList.add("active");
         document.getElementById("workerTab").classList.add("active");
+        document.body.classList.add("worker-mode");
       }
     }
   </script>
