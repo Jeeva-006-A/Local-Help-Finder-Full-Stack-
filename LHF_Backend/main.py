@@ -13,13 +13,31 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from db.database import Base, engine
 from routers import customer, worker, booking, contact, admin
 
+from sqlalchemy import text
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Create tables on startup safely
     try:
+        # 1. Standard creation (creates new tables)
         Base.metadata.create_all(bind=engine)
+        
+        # 2. Migration helper (adds columns to existing tables)
+        with engine.connect() as conn:
+            # Check/Add aadhar_photo to workers
+            try:
+                conn.execute(text("ALTER TABLE workers ADD COLUMN IF NOT EXISTS aadhar_photo VARCHAR"))
+                conn.commit()
+            except Exception: pass
+            
+            # Check/Add status to workers
+            try:
+                conn.execute(text("ALTER TABLE workers ADD COLUMN IF NOT EXISTS status VARCHAR DEFAULT 'pending'"))
+                conn.commit()
+            except Exception: pass
+            
     except Exception as e:
-        print(f"Database initialization error: {e}")
+        print(f"Database initialization/migration error: {e}")
     yield
 
 app = FastAPI(title="Local Help Finder", lifespan=lifespan)
