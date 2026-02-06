@@ -14,9 +14,34 @@ def get_db():
     finally:
         db.close()
 
+import cloudinary
+import cloudinary.uploader
+import os
+
+# Configure Cloudinary
+cloudinary.config(
+    cloud_name="drwxklysw",
+    api_key="774271779353514",
+    api_secret="FJuEmGfhFcN1yVPSjFpsS3f-0mY",
+    secure=True
+)
+
 @router.post("/register")
 def register_worker(data: WorkerCreate, db: Session = Depends(get_db)):
-    db.add(Worker(**data.dict()))
+    # Create worker data without the photo first
+    worker_data = data.model_dump()
+    
+    # Check if a photo was provided (as a base64 string)
+    if data.aadhar_photo:
+        try:
+            # Upload to Cloudinary
+            # Note: Cloudinary uploader handles base64 strings directly
+            upload_result = cloudinary.uploader.upload(data.aadhar_photo, folder="lhf_aadhar_cards")
+            worker_data["aadhar_photo"] = upload_result["secure_url"]
+        except Exception as e:
+            raise HTTPException(500, f"Image upload failed: {str(e)}")
+
+    db.add(Worker(**worker_data))
     db.commit()
     return {"message": "Worker registered"}
 

@@ -4,3 +4,5 @@ sqlalchemy
 pydantic[email]
 psycopg2-binary
 email-validator
+cloudinary
+python-multipart
