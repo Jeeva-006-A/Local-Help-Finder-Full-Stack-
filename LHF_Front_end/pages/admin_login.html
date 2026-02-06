@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Local Help Finder</title>
+    <link rel="stylesheet" href="../css/auth.css">
+    <style>
+        :root {
+            --primary-color: #334155;
+            /* Slate for Admin */
+            --accent-color: #0f172a;
+        }
+
+        .auth-left {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div>
+                <h1>Admin Portal</h1>
+                <p class="tagline">System Management & Verification</p>
+                <p class="description">Secure access for administrators only.</p>
+            </div>
+        </div>
+
+        <div class="auth-right">
+            <div class="auth-box">
+                <a href="../../index.html" class="back-link">Back to Home</a>
+
+                <h2>Authentication</h2>
+                <p class="subtitle">Please enter your administrative credentials</p>
+
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="username" placeholder="Admin username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="Enter security key" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Initialize Access</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/connections/config.js"></script>
+    <script src="../js/connections/admin.js"></script>
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const result = await AdminAPI.login(username, password);
+                localStorage.setItem('admin_user', result.username);
+                alert(result.message);
+                window.location.href = 'admin_dashboard.html';
+            } catch (error) {
+                alert("Access Denied: " + error.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

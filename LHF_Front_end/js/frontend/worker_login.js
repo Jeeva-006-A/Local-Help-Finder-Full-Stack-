@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('user_name', result.name);
                 localStorage.setItem('user_type', 'worker');
                 localStorage.setItem('worker_category', result.category);
+                localStorage.setItem('worker_status', result.status);
 
                 alert("Login Successful!");
                 window.location.href = "worker_dashboard.html";

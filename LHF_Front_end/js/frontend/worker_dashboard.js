@@ -11,6 +11,22 @@ document.addEventListener('DOMContentLoaded', () => {
     loadIncomingJobs();
     loadHistory();
 
+    const workerStatus = localStorage.getItem('worker_status');
+    if (workerStatus === 'pending') {
+        const jobsContainer = document.getElementById('incoming-jobs');
+        if (jobsContainer) {
+            jobsContainer.innerHTML = `
+                <div class="card" style="border: 1px solid #ff9800; background: rgba(255, 152, 0, 0.1);">
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-clock" style="font-size: 2rem; color: #ff9800; margin-bottom: 10px;"></i>
+                        <h3 style="color: #ff9800;">Account Under Verification</h3>
+                        <p style="color: #666;">Your account is currently being reviewed by our admin. You will be able to see and accept jobs once verified.</p>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
     // Category UI Setup
     const categoryData = {
         plumber: { icon: "fas fa-faucet", name: "PLUMBER", type: "Plumber" },

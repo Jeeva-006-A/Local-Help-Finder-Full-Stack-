@@ -13,5 +13,6 @@ class Worker(Base):
     experience = Column(Integer)
     address = Column(String)
     password = Column(String)
+    status = Column(String, default="pending") # pending, verified, rejected
 
     bookings = relationship("Booking", back_populates="worker")

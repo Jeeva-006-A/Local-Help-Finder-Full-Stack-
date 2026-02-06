@@ -11,7 +11,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from db.database import Base, engine
-from routers import customer, worker, booking, contact
+from routers import customer, worker, booking, contact, admin
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -62,6 +62,7 @@ api_router.include_router(customer.router)
 api_router.include_router(worker.router)
 api_router.include_router(booking.router)
 api_router.include_router(contact.router)
+api_router.include_router(admin.router)
 
 app.include_router(api_router)
 
@@ -71,6 +72,8 @@ app.include_router(customer.router)
 app.include_router(worker.router)
 app.include_router(booking.router)
 app.include_router(contact.router)
+app.include_router(admin.router)
+
 
 
 

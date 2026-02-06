@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Local Help Finder</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">LHF Admin</div>
+            <ul class="nav-links">
+                <li><a href="#" class="active"><i class="fas fa-user-check"></i> Verifications</a></li>
+                <!-- Future features can go here -->
+            </ul>
+            <a href="../../index.html" class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <div>
+                    <h1>Worker Verification</h1>
+                    <p style="color: var(--text-secondary);">Manage and verify service providers</p>
+                </div>
+                <div class="admin-user">
+                    <span>Welcome, <strong id="adminName">Admin</strong></span>
+                </div>
+            </header>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p style="color: var(--text-secondary);">Pending Requests</p>
+                    <h2 id="pendingCount">0</h2>
+                </div>
+            </div>
+
+            <div class="data-section">
+                <h3>Verification Queue</h3>
+                <div style="overflow-x: auto;">
+                    <table id="workerTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Experience</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workerTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/connections/config.js"></script>
+    <script src="../js/connections/admin.js"></script>
+    <script>
+        // Check Auth
+        const adminUser = localStorage.getItem('admin_user');
+        if (!adminUser) {
+            window.location.href = 'admin_login.html';
+        }
+        document.getElementById('adminName').textContent = adminUser;
+
+        // Load Pending Workers
+        async function loadWorkers() {
+            try {
+                const workers = await AdminAPI.getPendingWorkers();
+                const tableBody = document.getElementById('workerTableBody');
+                const pendingCount = document.getElementById('pendingCount');
+
+                tableBody.innerHTML = '';
+                pendingCount.textContent = workers.length;
+
+                if (workers.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No pending verifications found</td></tr>';
+                    return;
+                }
+
+                workers.forEach(worker => {
+                    const row = `
+                        <tr>
+                            <td>${worker.full_name}</td>
+                            <td><span class="badge">${worker.category}</span></td>
+                            <td>${worker.experience} Years</td>
+                            <td>${worker.email}</td>
+                            <td>
+                                <button class="btn-verify" onclick="updateStatus(${worker.id}, 'verified')">Verify</button>
+                                <button class="btn-reject" onclick="updateStatus(${worker.id}, 'rejected')">Reject</button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Error loading workers:", error);
+            }
+        }
+
+        async function updateStatus(workerId, status) {
+            if (!confirm(`Are you sure you want to mark this worker as ${status}?`)) return;
+
+            try {
+                await AdminAPI.updateWorkerStatus(workerId, status);
+                alert(`Worker successfully ${status}`);
+                loadWorkers();
+            } catch (error) {
+                alert("Operation failed: " + error.message);
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('admin_user');
+        });
+
+        // Initialize
+        loadWorkers();
+    </script>
+</body>
+
+</html>

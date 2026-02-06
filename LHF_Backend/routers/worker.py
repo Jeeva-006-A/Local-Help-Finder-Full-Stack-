@@ -34,8 +34,10 @@ def login_worker(data: WorkerLogin, db: Session = Depends(get_db)):
         "worker_id": worker.id,
         "name": worker.full_name,
         "category": worker.category,
-        "address": worker.address
+        "address": worker.address,
+        "status": worker.status
     }
+
 @router.put("/{worker_id}")
 def update_worker_profile(
     worker_id: int,
@@ -65,12 +67,15 @@ def get_incoming_jobs(worker_id: int, db: Session = Depends(get_db)):
     if not worker:
         raise HTTPException(404, "Worker not found")
 
+    if worker.status != "verified":
+        return []
+
     bookings = db.query(Booking).filter(
         Booking.status == "pending",
         Booking.service == worker.category,
         Booking.worker_id.is_(None)
-
     ).all()
+
 
     return [
         {
