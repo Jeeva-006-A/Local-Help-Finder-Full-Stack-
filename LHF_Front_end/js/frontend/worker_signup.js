@@ -13,6 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            const aadharFile = document.getElementById('aadharPhoto').files[0];
+            let aadharBase64 = null;
+
+            if (aadharFile) {
+                aadharBase64 = await fileToBase64(aadharFile);
+            }
+
             const data = {
                 full_name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
@@ -20,12 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 category: document.getElementById('category').value,
                 experience: parseInt(document.getElementById('experience').value),
                 address: document.getElementById('address').value,
-                password: password
+                password: password,
+                aadhar_photo: aadharBase64
             };
 
             try {
                 await AuthAPI.registerWorker(data);
-                alert("Registration Successful! Please login.");
+                alert("Registration Successful! Please login for verification status.");
                 window.location.href = "worker_login.html";
             } catch (error) {
                 console.error("Error:", error);
@@ -38,3 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}

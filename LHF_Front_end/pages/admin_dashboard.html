@@ -52,6 +52,7 @@
                                 <th>Category</th>
                                 <th>Experience</th>
                                 <th>Email</th>
+                                <th>Documents</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -97,6 +98,12 @@
                             <td>${worker.experience} Years</td>
                             <td>${worker.email}</td>
                             <td>
+                                <button class="badge" style="cursor: pointer; border: 1px solid var(--border-color);" 
+                                    onclick="viewAadhar('${worker.aadhar_photo}')">
+                                    <i class="fas fa-id-card"></i> View ID
+                                </button>
+                            </td>
+                            <td>
                                 <button class="btn-verify" onclick="updateStatus(${worker.id}, 'verified')">Verify</button>
                                 <button class="btn-reject" onclick="updateStatus(${worker.id}, 'rejected')">Reject</button>
                             </td>
@@ -107,6 +114,16 @@
             } catch (error) {
                 console.error("Error loading workers:", error);
             }
+        }
+
+        function viewAadhar(base64) {
+            if (!base64 || base64 === 'null') {
+                alert("No ID photo uploaded.");
+                return;
+            }
+            const win = window.open();
+            win.document.write(`<img src="${base64}" style="max-width: 100%; height: auto;" />`);
+            win.document.title = "Aadhaar Card Verification";
         }
 
         async function updateStatus(workerId, status) {

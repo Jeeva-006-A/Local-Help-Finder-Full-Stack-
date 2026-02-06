@@ -8,6 +8,7 @@ class WorkerCreate(BaseModel):
     experience: int
     address: str
     password: str
+    aadhar_photo: str | None = None
 
 class WorkerLogin(BaseModel):
     email: str

@@ -13,6 +13,7 @@ class Worker(Base):
     experience = Column(Integer)
     address = Column(String)
     password = Column(String)
+    aadhar_photo = Column(String, nullable=True) # Stores base64 string
     status = Column(String, default="pending") # pending, verified, rejected
 
     bookings = relationship("Booking", back_populates="worker")
