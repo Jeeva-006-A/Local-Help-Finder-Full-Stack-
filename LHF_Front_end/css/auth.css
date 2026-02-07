@@ -1,10 +1,10 @@
 :root {
-    --primary-color: #8b5cf6;
-    /* Violet 500 - Customer Theme */
-    --primary-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-    --worker-color: #0d9488;
-    /* Teal 600 */
-    --worker-gradient: linear-gradient(135deg, #0d9488 0%, #115e59 100%);
+    --primary-color: #4f46e5;
+    /* Indigo 600 - Customer Theme */
+    --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+    --worker-color: #059669;
+    /* Emerald 600 */
+    --worker-gradient: linear-gradient(135deg, #059669 0%, #064e3b 100%);
     --text-dark: #1e293b;
     /* Slate 800 */
     --text-light: #64748b;
@@ -12,6 +12,8 @@
     --white: #ffffff;
     --bg-light: #f8fafc;
     /* Slate 50 */
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 * {
@@ -25,6 +27,67 @@ body {
     min-height: 100vh;
     background: var(--bg-light);
     color: var(--text-dark);
+    position: relative;
+}
+
+/* Navigation */
+.landing-nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1001;
+}
+
+.nav-brand {
+    color: white;
+    font-size: 1.4em;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 24px;
+}
+
+.nav-links a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1em;
+    transition: all 0.2s;
+}
+
+.nav-links a:hover {
+    color: white;
+    transform: translateY(-1px);
+}
+
+.menu-toggle {
+    display: none;
+}
+
+.nav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 999;
+}
+
+.nav-overlay.active {
+    display: block;
 }
 
 .auth-container {
@@ -316,14 +379,84 @@ h2 {
 }
 
 @media (max-width: 968px) {
+    .landing-nav {
+        position: fixed;
+        padding: 16px 20px;
+        background: var(--primary-gradient);
+    }
+
+    .worker-page .landing-nav {
+        background: var(--worker-gradient);
+    }
+
+    .admin-page .landing-nav {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        height: 100vh;
+        background: var(--white);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        padding: 50px;
+        transition: var(--transition);
+        box-shadow: var(--shadow-xl);
+        z-index: 1000;
+    }
+
+    .nav-links.active {
+        right: 0;
+    }
+
+    .nav-links a {
+        color: var(--text-dark);
+        font-size: 1.25em;
+    }
+
+    .menu-toggle {
+        display: block;
+        cursor: pointer;
+        z-index: 1002;
+    }
+
+    .menu-toggle .bar {
+        display: block;
+        width: 25px;
+        height: 3px;
+        margin: 5px auto;
+        transition: var(--transition);
+        background-color: white;
+        border-radius: 3px;
+    }
+
+    .menu-toggle.active .bar:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu-toggle.active .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .menu-toggle.active .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
     .auth-container {
         flex-direction: column;
         height: auto;
+        padding-top: 60px;
+        /* Offset for fixed nav */
     }
 
     .auth-left {
         padding: 60px 24px;
-        min-height: 300px;
+        min-height: 250px;
         height: auto;
         text-align: center;
     }
@@ -349,6 +482,10 @@ h2 {
 }
 
 @media (max-width: 480px) {
+    .nav-brand {
+        font-size: 1.2em;
+    }
+
     .auth-left {
         padding: 40px 20px;
     }

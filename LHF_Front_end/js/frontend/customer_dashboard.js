@@ -112,15 +112,18 @@ function renderBookings(bookings) {
 
     container.innerHTML = '';
 
-    if (bookings.length === 0) {
-        container.innerHTML = '<p id="no-bookings-msg" style="text-align: center; color: #666; margin-top: 20px;">No bookings found.</p>';
+    // Filter out cancelled bookings to avoid "double show"
+    const displayBookings = bookings.filter(b => b.status !== 'cancelled');
+
+    if (displayBookings.length === 0) {
+        container.innerHTML = '<p id="no-bookings-msg" style="text-align: center; color: #666; margin-top: 20px;">No active bookings found.</p>';
         updateStats(bookings);
         return;
     }
 
     updateStats(bookings);
 
-    bookings.forEach(booking => {
+    displayBookings.forEach(booking => {
         const card = document.createElement('div');
         card.className = `booking-card ${booking.status === 'accepted' ? 'accepted-card' : ''}`;
 
@@ -131,16 +134,16 @@ function renderBookings(bookings) {
             statusBadge = `<span class="badge badge-accepted"><i class="fas fa-check-circle"></i> Accepted</span>`;
         } else if (booking.status === 'completed') {
             statusBadge = `<span class="badge badge-accepted" style="background-color: #4CAF50;">Completed</span>`;
-        } else if (booking.status === 'cancelled') {
-            statusBadge = `<span class="badge badge-pending" style="background-color: #f44336; color: white;">Cancelled</span>`;
         }
 
         let workerInfo = '';
         if (booking.worker) {
             workerInfo = `<p><strong>Worker:</strong> ${booking.worker.name}</p>
                           <p><strong>Worker Phone:</strong> ${booking.worker.phone}</p>`;
-        } else {
+        } else if (booking.status === 'pending') {
             workerInfo = `<p><strong>Status:</strong> Waiting for worker...</p>`;
+        } else {
+            workerInfo = `<p><strong>Status:</strong> ${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</p>`;
         }
 
         // Add Cancel button if pending

@@ -1,9 +1,9 @@
 :root {
-  --primary-color: #1a365d;
-  /* Keeping Legacy Navy for contrast if needed, but Brand is Teal */
-  --brand-color: #0d9488;
-  /* Teal 600 */
-  --brand-gradient: linear-gradient(135deg, #0d9488 0%, #115e59 100%);
+  --primary-color: #064e3b;
+  /* Deep Emerald for headers */
+  --brand-color: #059669;
+  /* Emerald 600 */
+  --brand-gradient: linear-gradient(135deg, #059669 0%, #064e3b 100%);
   --bg-light: #f8fafc;
   /* Slate 50 */
   --text-dark: #1e293b;

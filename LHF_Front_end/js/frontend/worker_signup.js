@@ -45,6 +45,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Hamburger Menu Logic
+    const menuToggle = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    const navOverlay = document.getElementById('nav-overlay');
+
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            navLinks.classList.toggle('active');
+            if (navOverlay) navOverlay.classList.toggle('active');
+        });
+    }
+
+    if (navOverlay) {
+        navOverlay.addEventListener('click', () => {
+            menuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+            navOverlay.classList.remove('active');
+        });
+    }
 });
 
 function fileToBase64(file) {

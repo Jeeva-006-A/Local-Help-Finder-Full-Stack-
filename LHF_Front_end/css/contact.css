@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #8b5cf6;
-    /* Violet 500 - Updated Brand Color */
-    --primary-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    --primary-color: #4f46e5;
+    /* Indigo 600 */
+    --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
     --text-dark: #1e293b;
     /* Slate 800 */
     --text-light: #64748b;

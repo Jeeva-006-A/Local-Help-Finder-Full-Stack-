@@ -1,9 +1,9 @@
 :root {
-    --primary-color: #8b5cf6;
-    /* Violet 500 - Distinct from Teal and Blue, lighter and friendlier */
-    --primary-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-    --secondary-color: #0d9488;
-    /* Teal 600 - Contextual Awareness */
+    --primary-color: #4f46e5;
+    /* Indigo 600 */
+    --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+    --secondary-color: #059669;
+    /* Emerald 600 */
     --accent-color: #f59e0b;
     /* Amber 500 */
     --text-dark: #1e293b;
