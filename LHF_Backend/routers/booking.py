@@ -87,6 +87,7 @@ def customer_bookings(
             "phone": b.phone,
             "status": b.status,
             "worker": {
+                "worker_id": b.worker_id,
                 "name": b.worker.full_name,
                 "phone": b.worker.phone,
                 "address": b.worker.address

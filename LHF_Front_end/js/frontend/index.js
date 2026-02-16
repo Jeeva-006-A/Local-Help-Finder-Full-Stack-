@@ -5,19 +5,37 @@ document.addEventListener('DOMContentLoaded', () => {
         customerLoginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const email = document.getElementById('customerEmail').value;
+            const identifier = document.getElementById('customerEmail').value;
             const password = document.getElementById('customerPassword').value;
 
             try {
-                const data = await AuthAPI.loginCustomer(email, password);
+                // 1. Try Customer Login First
+                try {
+                    const data = await AuthAPI.loginCustomer(identifier, password);
+                    localStorage.setItem('user_id', data.customer_id);
+                    localStorage.setItem('user_type', 'customer');
+                    localStorage.setItem('user_name', data.full_name);
+                    localStorage.setItem('user_phone', data.phone);
 
-                localStorage.setItem('user_id', data.customer_id);
-                localStorage.setItem('user_type', 'customer');
-                localStorage.setItem('user_name', data.full_name);
-                localStorage.setItem('user_phone', data.phone);
+                    alert("Customer Login Successful!");
+                    window.location.href = './LHF_Front_end/pages/customer_dashboard.html';
+                } catch (customerError) {
+                    // 2. If customer login failed with 401, try Admin Login
+                    if (customerError.message && (customerError.message.includes("401") || customerError.message.includes("Invalid"))) {
+                        try {
+                            const adminResult = await AdminAPI.login(identifier, password);
+                            localStorage.setItem('admin_user', adminResult.username);
+                            localStorage.setItem('user_type', 'admin');
 
-                alert("Login Successful!");
-                window.location.href = './LHF_Front_end/pages/customer_dashboard.html';
+                            alert("Admin Login Successful!");
+                            window.location.href = './LHF_Front_end/pages/admin_dashboard.html';
+                        } catch (adminError) {
+                            throw new Error("Invalid credentials for both Customer and Admin.");
+                        }
+                    } else {
+                        throw customerError;
+                    }
+                }
             } catch (error) {
                 console.error("Login Result:", error);
                 alert("Login failed: " + error.message);

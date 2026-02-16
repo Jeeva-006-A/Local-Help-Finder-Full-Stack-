@@ -193,19 +193,14 @@ async function loadHistory() {
                 card.innerHTML = `
                    <div class="booking-header">
                       <h4>${b.service}</h4>
-                      <span class="badge badge-accepted">${b.status}</span>
+                      <span class="badge badge-${b.status}">${b.status}</span>
                    </div>
                    <div class="booking-body">
                       <p><strong>Customer:</strong> ${b.customer ? b.customer.name : 'N/A'}</p>
                       <p><strong>Phone:</strong> ${b.customer ? b.customer.phone : 'N/A'}</p>
                       <p><strong>Address:</strong> ${b.address}</p>
                       <p><strong>Problem:</strong> ${b.problem}</p>
-                      ${b.status === 'accepted' ? `
-                      <div class="booking-actions" style="margin-top: 10px;">
-                          <button class="btn btn-primary btn-small" onclick="completeJob(${b.booking_id})">
-                               <i class="fas fa-check-double"></i> Complete Job
-                          </button>
-                      </div>` : ''}
+                      ${b.status === 'accepted' ? `<div class="booking-actions" style="margin-top: 10px;"></div>` : ''}
                    </div>
                 `;
                 historyList.appendChild(card);

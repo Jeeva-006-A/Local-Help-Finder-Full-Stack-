@@ -133,7 +133,7 @@ function renderBookings(bookings) {
         } else if (booking.status === 'accepted') {
             statusBadge = `<span class="badge badge-accepted"><i class="fas fa-check-circle"></i> Accepted</span>`;
         } else if (booking.status === 'completed') {
-            statusBadge = `<span class="badge badge-accepted" style="background-color: #4CAF50;">Completed</span>`;
+            statusBadge = `<span class="badge badge-completed"><i class="fas fa-check-double"></i> Completed</span>`;
         }
 
         let workerInfo = '';
@@ -152,6 +152,12 @@ function renderBookings(bookings) {
             actionButtons = `<div class="booking-actions">
                 <button class="btn btn-outline btn-small" onclick="cancelBooking(${booking.booking_id})">
                   <i class="fas fa-times"></i> Cancel Booking
+                </button>
+              </div>`;
+        } else if (booking.status === 'accepted') {
+            actionButtons = `<div class="booking-actions">
+                <button class="btn btn-primary btn-small" onclick="completeBooking(${booking.booking_id}, ${booking.worker ? (booking.worker.worker_id || booking.worker.id || 'null') : 'null'})">
+                  <i class="fas fa-check-double"></i> Completed
                 </button>
               </div>`;
         }
@@ -174,6 +180,19 @@ function renderBookings(bookings) {
 }
 
 
+
+async function completeBooking(bookingId, workerId) {
+    if (!confirm("Are you sure you want to mark this job as completed?")) return;
+
+    try {
+        await BookingsAPI.updateStatus(bookingId, 'completed', workerId);
+        alert("Job completed!");
+        loadBookings();
+    } catch (error) {
+        console.error("Error completing job:", error);
+        alert("Error: " + error.message);
+    }
+}
 
 function updateStats(bookings) {
     const completedCount = bookings.filter(b => b.status === "completed").length;
@@ -246,3 +265,4 @@ window.enableEdit = enableEdit;
 window.saveProfile = saveProfile;
 window.bookService = bookService;
 window.cancelBooking = cancelBooking;
+window.completeBooking = completeBooking;
