@@ -4,14 +4,21 @@ from models.admin import Admin
 def reset_admin():
     db = SessionLocal()
     try:
-        admin = db.query(Admin).filter(Admin.username == "Jeeva").first()
+        # Check by new email
+        admin = db.query(Admin).filter(Admin.username == "jeeva1629@gmail.com").first()
         if admin:
-            admin.password = "Jeeva_1629"
+            admin.password = "Jeeva_1629_A"
         else:
-            admin = Admin(username="Jeeva", password="Jeeva_1629")
-            db.add(admin)
+            # Also check if old 'Jeeva' exists and update it, otherwise create new
+            old_admin = db.query(Admin).filter(Admin.username == "Jeeva").first()
+            if old_admin:
+                old_admin.username = "jeeva1629@gmail.com"
+                old_admin.password = "Jeeva_1629_A"
+            else:
+                admin = Admin(username="jeeva1629@gmail.com", password="Jeeva_1629_A")
+                db.add(admin)
         db.commit()
-        print("Admin user 'Jeeva' password set to 'Jeeva_1629'")
+        print("Admin user 'jeeva1629@gmail.com' password set to 'Jeeva_1629_A'")
     except Exception as e:
         print(f"Error: {e}")
     finally:
