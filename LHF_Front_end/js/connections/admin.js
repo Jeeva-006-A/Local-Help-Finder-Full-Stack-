@@ -8,7 +8,12 @@ class AdminAPI {
             const text = await response.text();
             throw new Error(`Server Error: ${response.status} - ${response.statusText}`);
         }
-        if (!response.ok) throw new Error(data.detail || "Request failed");
+        if (!response.ok) {
+            const errorMsg = data.detail
+                ? (typeof data.detail === 'object' ? JSON.stringify(data.detail) : data.detail)
+                : "Request failed";
+            throw new Error(errorMsg);
+        }
         return data;
     }
 

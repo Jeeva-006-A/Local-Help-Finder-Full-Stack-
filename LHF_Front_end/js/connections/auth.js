@@ -12,7 +12,11 @@ class AuthAPI {
         }
 
         if (!response.ok) {
-            throw new Error(data.detail || "Request failed");
+            // Handle FastAPI style error details
+            const errorMsg = data.detail
+                ? (typeof data.detail === 'object' ? JSON.stringify(data.detail) : data.detail)
+                : "Request failed";
+            throw new Error(errorMsg);
         }
         return data;
     }

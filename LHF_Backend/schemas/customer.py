@@ -10,7 +10,7 @@ class CustomerCreate(BaseModel):
 
 
 class CustomerLogin(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 
