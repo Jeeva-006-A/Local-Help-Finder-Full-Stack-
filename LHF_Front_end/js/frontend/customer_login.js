@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             window.location.href = "admin_dashboard.html";
                             return;
                         } catch (adminError) {
-                            throw new Error("Invalid credentials for both Customer and Admin.");
+                            throw new Error(`Admin Login failed: ${adminError.message}`);
                         }
                     } else {
                         throw customerError;
