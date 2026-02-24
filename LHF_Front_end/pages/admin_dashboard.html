@@ -37,22 +37,38 @@
 
             <div class="stats-grid">
                 <div class="stat-card">
-                    <p style="color: var(--text-secondary);">Pending Requests</p>
+                    <p style="color: var(--text-secondary);">Total Professionals</p>
+                    <h2 id="totalCount">0</h2>
+                </div>
+                <div class="stat-card">
+                    <p style="color: var(--text-secondary);">Pending Verifications</p>
                     <h2 id="pendingCount">0</h2>
                 </div>
             </div>
 
             <div class="data-section">
-                <h3>Verification Queue</h3>
+                <div class="section-header"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h3>Service Providers Management</h3>
+                    <div class="filters">
+                        <select id="statusFilter" onchange="loadWorkers()"
+                            style="padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary);">
+                            <option value="all">All Workers</option>
+                            <option value="pending">Pending Only</option>
+                            <option value="verified">Verified Only</option>
+                            <option value="rejected">Rejected/Blocked</option>
+                        </select>
+                    </div>
+                </div>
                 <div style="overflow-x: auto;">
                     <table id="workerTable">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Category</th>
-                                <th>Experience</th>
+                                <th>Status</th>
                                 <th>Email</th>
-                                <th>Documents</th>
+                                <th>ID Proof</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -75,37 +91,56 @@
         }
         document.getElementById('adminName').textContent = adminUser;
 
-        // Load Pending Workers
+        // Load All Workers
         async function loadWorkers() {
             try {
-                const workers = await AdminAPI.getPendingWorkers();
+                const workers = await AdminAPI.getAllWorkers();
                 const tableBody = document.getElementById('workerTableBody');
-                const pendingCount = document.getElementById('pendingCount');
+                const pendingCountEl = document.getElementById('pendingCount');
+                const totalCountEl = document.getElementById('totalCount');
+                const filter = document.getElementById('statusFilter').value;
 
                 tableBody.innerHTML = '';
-                pendingCount.textContent = workers.length;
 
-                if (workers.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No pending verifications found</td></tr>';
+                const pendingCount = workers.filter(w => w.status === 'pending').length;
+                pendingCountEl.textContent = pendingCount;
+                totalCountEl.textContent = workers.length;
+
+                const filteredWorkers = filter === 'all'
+                    ? workers
+                    : workers.filter(w => w.status === filter);
+
+                if (filteredWorkers.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 3rem;">No ${filter !== 'all' ? filter : ''} workers found</td></tr>`;
                     return;
                 }
 
-                workers.forEach(worker => {
+                filteredWorkers.forEach(worker => {
+                    const statusClass = worker.status === 'verified' ? 'success' : (worker.status === 'pending' ? 'warning' : 'danger');
                     const row = `
                         <tr>
-                            <td>${worker.full_name}</td>
+                            <td><strong>${worker.full_name}</strong></td>
                             <td><span class="badge">${worker.category}</span></td>
-                            <td>${worker.experience} Years</td>
+                            <td><span class="badge-${statusClass}">${worker.status.toUpperCase()}</span></td>
                             <td>${worker.email}</td>
                             <td>
-                                <button class="badge" style="cursor: pointer; border: 1px solid var(--border-color);" 
-                                    onclick="viewAadhar('${worker.aadhar_photo}')">
-                                    <i class="fas fa-id-card"></i> View ID
+                                <button class="btn-action" onclick="viewAadhar('${worker.aadhar_photo}')">
+                                    <i class="fas fa-eye"></i> View ID
                                 </button>
                             </td>
                             <td>
-                                <button class="btn-verify" onclick="updateStatus(${worker.id}, 'verified')">Verify</button>
-                                <button class="btn-reject" onclick="updateStatus(${worker.id}, 'rejected')">Reject</button>
+                                <div class="action-buttons">
+                                    ${worker.status === 'pending' ? `
+                                        <button class="btn-verify" onclick="updateStatus(${worker.id}, 'verified')">Verify</button>
+                                        <button class="btn-reject" onclick="updateStatus(${worker.id}, 'rejected')">Reject</button>
+                                    ` : `
+                                        <button class="btn-reset" onclick="updateStatus(${worker.id}, 'pending')">Reset</button>
+                                        ${worker.status === 'verified' ?
+                            `<button class="btn-reject" onclick="updateStatus(${worker.id}, 'rejected')">Block</button>` :
+                            `<button class="btn-verify" onclick="updateStatus(${worker.id}, 'verified')">Unblock</button>`
+                        }
+                                    `}
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -116,22 +151,20 @@
             }
         }
 
-        function viewAadhar(base64) {
-            if (!base64 || base64 === 'null') {
+        function viewAadhar(url) {
+            if (!url || url === 'null') {
                 alert("No ID photo uploaded.");
                 return;
             }
-            const win = window.open();
-            win.document.write(`<img src="${base64}" style="max-width: 100%; height: auto;" />`);
-            win.document.title = "Aadhaar Card Verification";
+            window.open(url, '_blank');
         }
 
         async function updateStatus(workerId, status) {
-            if (!confirm(`Are you sure you want to mark this worker as ${status}?`)) return;
+            if (!confirm(`Are you sure you want to change status to ${status}?`)) return;
 
             try {
                 await AdminAPI.updateWorkerStatus(workerId, status);
-                alert(`Worker successfully ${status}`);
+                alert(`Status updated to ${status}`);
                 loadWorkers();
             } catch (error) {
                 alert("Operation failed: " + error.message);

@@ -26,8 +26,8 @@ class AdminAPI {
         return await this.handleResponse(response);
     }
 
-    static async getPendingWorkers() {
-        const response = await fetch(`${API_BASE_URL}/admin/workers/pending`);
+    static async getAllWorkers() {
+        const response = await fetch(`${API_BASE_URL}/admin/workers/all`);
         return await this.handleResponse(response);
     }
 

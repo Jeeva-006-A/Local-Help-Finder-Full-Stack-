@@ -34,9 +34,9 @@ def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
 
     return {"message": "Login successful", "username": admin.username}
 
-@router.get("/workers/pending")
-def get_pending_workers(db: Session = Depends(get_db)):
-    workers = db.query(Worker).filter(Worker.status == "pending").all()
+@router.get("/workers/all")
+def get_all_workers(db: Session = Depends(get_db)):
+    workers = db.query(Worker).all()
     return workers
 
 @router.put("/workers/{worker_id}/status")
