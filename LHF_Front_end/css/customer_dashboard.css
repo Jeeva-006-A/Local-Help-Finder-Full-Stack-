@@ -61,6 +61,9 @@ body {
 .nav-content h2 {
     font-size: 1.4em;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 /* Right nav */
@@ -135,7 +138,6 @@ body {
 
 .btn-secondary {
     background: #4a5568;
-    /* Slate Blue-Grey instead of Green */
     color: white;
 }
 
@@ -311,21 +313,23 @@ body {
 /* Stats Grid */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
     margin-bottom: 40px;
+    justify-content: start;
 }
 
 .stat-card {
     background: white;
     padding: 2rem;
     border-radius: var(--radius);
-    box-shadow: var(--shadow-premium);
+    box-shadow: var(--shadow-sm);
     display: flex;
     align-items: center;
     gap: 20px;
     transition: var(--transition);
-    border: 1px solid rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    max-width: 400px;
 }
 
 .stat-card:hover {
@@ -391,6 +395,11 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
+    margin-bottom: 8px;
+}
+
+.form-actions {
+    margin-top: 10px;
 }
 
 .form-group {
@@ -448,7 +457,6 @@ body {
 
 .accepted-card {
     background: #f0fff4;
-    /* Keep subtle indication */
     border-color: #c6f6d5;
 }
 
@@ -525,16 +533,14 @@ body {
     flex-wrap: wrap;
 }
 
-
-
 /* Navbar icons */
-.dashboard-nav i,
-.profile-icon i {
-    color: white;
+.dashboard-nav .nav-content h2 i {
+    color: var(--primary-color);
 }
 
-/* Stats icon */
-
+.profile-icon i {
+    color: var(--primary-color);
+}
 
 /* Section headings */
 .content-section h3 i {
@@ -542,7 +548,7 @@ body {
     margin-right: 8px;
 }
 
-/* Specific Service Icons Colors - kept purely for semantic meaning */
+/* Specific Service Icons Colors */
 .fa-faucet {
     color: #3182ce;
 }
@@ -593,7 +599,6 @@ body {
     color: white;
 }
 
-/* Responsive */
 /* Responsive Enhancements */
 @media (max-width: 1024px) {
     .container {

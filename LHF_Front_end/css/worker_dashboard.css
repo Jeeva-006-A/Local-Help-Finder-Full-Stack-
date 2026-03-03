@@ -60,7 +60,7 @@ body {
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .nav-content h2 i {
@@ -89,8 +89,8 @@ body {
 }
 
 .btn-profile:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--brand-color);
+  background: #e2e8f0;
+  border-color: var(--border);
 }
 
 /* Buttons */
@@ -165,13 +165,12 @@ body {
 }
 
 .profile-header {
-  background: var(--bg-dark);
+  background: var(--brand-color);
   color: white;
   padding: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--border);
 }
 
 .profile-content {
@@ -276,7 +275,7 @@ body {
 /* Stats Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2.5rem;
 }

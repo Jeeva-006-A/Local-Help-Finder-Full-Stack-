@@ -1,37 +1,46 @@
+// This file handles logic for the Worker Dashboard
+// Workers can accept jobs and view their history here.
+
+// 1. Get Worker details from local storage
 const workerId = localStorage.getItem('user_id');
 const userType = localStorage.getItem('user_type');
 const workerCategory = localStorage.getItem('worker_category');
 
+// Redirect to worker login page if not logged in
 if (!workerId || userType !== 'worker') {
     window.location.href = 'worker_login.html';
 }
 
+// Run these tasks when the page is ready
 document.addEventListener('DOMContentLoaded', () => {
-    loadProfile();
-    loadIncomingJobs();
-    loadHistory();
+    loadProfile();       // Load worker profile
+    loadIncomingJobs();  // Check for new jobs
+    loadHistory();       // Show completed/history jobs
 
+    // Notify worker if the account is still pending admin verification
     const workerStatus = localStorage.getItem('worker_status');
     if (workerStatus === 'pending') {
         const jobsContainer = document.getElementById('incoming-jobs');
         if (jobsContainer) {
             jobsContainer.innerHTML = `
-                <div class="card" style="border: 1px solid #ff9800; background: rgba(255, 152, 0, 0.1);">
-                    <div style="text-align: center; padding: 20px;">
-                        <i class="fas fa-clock" style="font-size: 2rem; color: #ff9800; margin-bottom: 10px;"></i>
-                        <h3 style="color: #ff9800;">Account Under Verification</h3>
-                        <p style="color: #666;">Your account is currently being reviewed by our admin. You will be able to see and accept jobs once verified.</p>
-                    </div>
+                <div class="card" style="border: 1px solid #ff9800; background: rgba(255, 152, 0, 0.1); padding: 20px; text-align: center;">
+                    <h3 style="color: #ff9800;">Account Under Verification</h3>
+                    <p>Please wait while the admin verifies your details.</p>
                 </div>
             `;
         }
     }
 
-    // Category UI Setup
+    // Set UI icons/symbols based on Worker Category
+    setupCategoryUI();
+});
+
+// Function to handle category symbols
+function setupCategoryUI() {
     const categoryData = {
-        plumber: { icon: "fas fa-faucet", name: "PLUMBER", type: "Plumber" },
-        electrician: { icon: "fas fa-bolt", name: "ELECTRICIAN", type: "Electrician" },
-        mechanic: { icon: "fas fa-wrench", name: "MECHANIC", type: "Mechanic" }
+        plumber: { icon: "fas fa-faucet", name: "PLUMBER" },
+        electrician: { icon: "fas fa-bolt", name: "ELECTRICIAN" },
+        mechanic: { icon: "fas fa-wrench", name: "MECHANIC" }
     };
 
     if (workerCategory && categoryData[workerCategory.toLowerCase()]) {
@@ -41,202 +50,192 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const nameEl = document.getElementById("categoryName");
         if (nameEl) nameEl.textContent = cat.name;
-
-        const typeEl = document.getElementById("categoryType");
-        if (typeEl) typeEl.textContent = cat.type;
     }
-});
+}
 
+// --- CORE FUNCTIONS ---
+
+// A. Load worker profile details
 async function loadProfile() {
     try {
         const data = await WorkerAPI.getProfile(workerId);
 
-        const viewWName = document.getElementById('viewWName');
-        const viewWEmail = document.getElementById('viewWEmail');
-        const viewWPhone = document.getElementById('viewWPhone');
-        const viewWAddress = document.getElementById('viewWAddress');
-        const profileCategory = document.getElementById('profileCategory');
-        const viewWExperience = document.getElementById('viewWExperience');
-        const viewWStatus = document.getElementById('viewWStatus');
+        // Insert data into HTML elements
+        document.getElementById('viewWName').innerText = data.full_name;
+        document.getElementById('viewWEmail').innerText = data.email;
+        document.getElementById('viewWPhone').innerText = data.phone;
+        document.getElementById('viewWAddress').innerText = data.address;
+        document.getElementById('profileCategory').innerText = data.category;
+        document.getElementById('viewWExperience').innerText = data.experience + " Years";
 
-        if (viewWName) viewWName.innerText = data.full_name;
-        if (viewWEmail) viewWEmail.innerText = data.email;
-        if (viewWPhone) viewWPhone.innerText = data.phone;
-        if (viewWAddress) viewWAddress.innerText = data.address;
-        if (profileCategory) profileCategory.innerText = data.category;
-        if (viewWExperience) viewWExperience.innerText = data.experience + " Years";
-
-        if (viewWStatus) {
-            viewWStatus.innerText = data.status.toUpperCase();
-            viewWStatus.className = `badge badge-${data.status}`;
+        // Status badge logic
+        const statusEl = document.getElementById('viewWStatus');
+        if (statusEl) {
+            statusEl.innerText = data.status.toUpperCase();
+            statusEl.className = `badge badge-${data.status}`;
         }
 
-        // Fill edit inputs
-        const editWName = document.getElementById('editWName');
-        const editWPhone = document.getElementById('editWPhone');
-        const editWAddress = document.getElementById('editWAddress');
+        // Fill input fields for editing
+        document.getElementById('editWName').value = data.full_name;
+        document.getElementById('editWPhone').value = data.phone;
+        document.getElementById('editWAddress').value = data.address;
 
-        if (editWName) editWName.value = data.full_name;
-        if (editWPhone) editWPhone.value = data.phone;
-        if (editWAddress) editWAddress.value = data.address;
     } catch (error) {
-        console.error("Error loading profile:", error);
+        console.error("Profile load error:", error);
     }
 }
 
+// B. Fetch new incoming jobs
 async function loadIncomingJobs() {
     try {
         const jobs = await WorkerAPI.getIncomingJobs(workerId);
         renderIncomingJobs(jobs);
     } catch (error) {
-        console.error("Error loading jobs:", error);
+        console.error("Jobs load error:", error);
     }
 }
 
+// Render job requests as cards in the UI
 function renderIncomingJobs(jobs) {
-    const containerId = `${workerCategory}Jobs`; // e.g. "PlumberJobs" or "plumberJobs"
-    // Note: The HTML usually has camelCase or lowercase logic. workerCategory is likely "Plumber" (from login response if Title Case) or "plumber".
-    // I need to be careful with case sensitivity. I'll try to find the container case-insensitively or just assume user data matches HTML.
-    // The previous code used `${workerCategory}Jobs`.
+    // Find the container for the specific category
+    let container = document.getElementById(`${workerCategory.toLowerCase()}Jobs`);
+    if (!container) return;
 
-    let container = document.getElementById(containerId);
-    // If not found, try lowercase
-    if (!container && workerCategory) {
-        container = document.getElementById(`${workerCategory.toLowerCase()}Jobs`);
-    }
+    container.style.display = 'block';
 
-    if (container) {
-        container.style.display = 'block';
-        // Clear hardcoded cards
-        const cards = container.querySelectorAll('.booking-card');
-        cards.forEach(c => c.remove());
+    // Update the total count of requests
+    const newRequestsCount = document.getElementById('newRequests');
+    if (newRequestsCount) newRequestsCount.innerText = jobs.length;
 
-        const newRequests = document.getElementById('newRequests');
-        if (newRequests) newRequests.innerText = jobs.length;
+    // Clear existing cards and add new ones
+    const existingCards = container.querySelectorAll('.booking-card');
+    existingCards.forEach(c => c.remove());
 
-        jobs.forEach(job => {
-            const card = document.createElement('div');
-            card.className = 'booking-card pending-card';
-            card.innerHTML = `
-                <div class="booking-header">
-                    <h4><i class="fas fa-tools"></i> ${job.service ? job.service.toUpperCase() : 'SERVICE'} Request</h4>
-                    <span class="badge badge-new"><i class="fas fa-bell"></i> New</span>
+    jobs.forEach(job => {
+        const card = document.createElement('div');
+        card.className = 'booking-card pending-card';
+        card.innerHTML = `
+            <div class="booking-header">
+                <h4><i class="fas fa-tools"></i> ${job.service.toUpperCase()} Request</h4>
+                <span class="badge badge-new">New</span>
+            </div>
+            <div class="booking-body">
+                <p><strong>Problem:</strong> ${job.problem}</p>
+                <p><strong>Address:</strong> ${job.address}</p>
+                <p><strong>Date:</strong> ${job.date} ${job.time}</p>
+                <div class="booking-actions">
+                    <button class="btn btn-accept" onclick="acceptJob(${job.booking_id})">Accept Job </button>
                 </div>
-                <div class="booking-body">
-                    <p><strong>Problem:</strong> ${job.problem}</p>
-                    <p><strong>Address:</strong> ${job.address}</p>
-                    <p><strong>Date:</strong> ${job.date} ${job.time}</p>
-                    <div class="booking-actions">
-                        <button class="btn btn-accept btn-small" onclick="acceptJob(${job.booking_id})">
-                             <i class="fas fa-check-circle"></i> Accept
-                        </button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    }
+            </div>
+        `;
+        container.appendChild(card);
+    });
 }
 
+// C. Logic to accept a job
 async function acceptJob(bookingId) {
-    if (!confirm("Accept this job?")) return;
+    if (!confirm("Are you sure you want to accept this job?")) return;
 
     try {
+        // Send status update to API as 'accepted'
         await BookingsAPI.updateStatus(bookingId, 'accepted', parseInt(workerId));
-        alert("Job accepted!");
-        loadIncomingJobs();
-        loadHistory();
+        alert("Job accepted successfully!");
+        loadIncomingJobs(); // Refresh job cards
+        loadHistory();      // Update history list
     } catch (error) {
-        console.error("Error accepting job:", error);
         alert("Error: " + error.message);
     }
 }
 
-
+// D. Logic to mark a job as completed
 async function completeJob(bookingId) {
-    if (!confirm("Are you sure you want to mark this job as completed?")) return;
+    if (!confirm("Confirm that the job is completed?")) return;
 
     try {
         await BookingsAPI.updateStatus(bookingId, 'completed', parseInt(workerId));
-        alert("Job completed!");
+        alert("Job completed! Good job.");
         loadHistory();
     } catch (error) {
-        console.error("Error completing job:", error);
         alert("Error: " + error.message);
     }
 }
 
+// E. Load Job History (completed tasks)
 async function loadHistory() {
     try {
         const bookings = await BookingsAPI.getForWorker(workerId);
         const historyList = document.getElementById('historyList');
-        const historySection = document.getElementById('jobHistory');
-
         if (historyList) historyList.innerHTML = '';
 
-        const acceptedCount = document.getElementById('acceptedJobs');
-        const completedCount = document.getElementById('completedJobs');
-        const totalCount = document.getElementById('totalJobs');
+        // Update counts
+        document.getElementById('acceptedJobs').innerText = bookings.filter(b => b.status === 'accepted').length;
+        document.getElementById('completedJobs').innerText = bookings.filter(b => b.status === 'completed').length;
+        document.getElementById('totalJobs').innerText = bookings.length;
 
-        if (acceptedCount) acceptedCount.innerText = bookings.filter(b => b.status === 'accepted').length;
-        if (completedCount) completedCount.innerText = bookings.filter(b => b.status === 'completed').length;
-        if (totalCount) totalCount.innerText = bookings.length;
-
-        if (bookings.length > 0 && historySection) {
-            historySection.style.display = 'block';
-        }
-
-        if (historyList) {
-            bookings.forEach(b => {
-                const card = document.createElement('div');
-                card.className = 'booking-card accepted-card';
-                card.innerHTML = `
-                   <div class="booking-header">
-                      <h4>${b.service}</h4>
-                      <span class="badge badge-${b.status}">${b.status}</span>
-                   </div>
-                   <div class="booking-body">
-                      <p><strong>Customer:</strong> ${b.customer ? b.customer.name : 'N/A'}</p>
-                      <p><strong>Phone:</strong> ${b.customer ? b.customer.phone : 'N/A'}</p>
-                      <p><strong>Address:</strong> ${b.address}</p>
-                      <p><strong>Problem:</strong> ${b.problem}</p>
-                      ${b.status === 'accepted' ? `<div class="booking-actions" style="margin-top: 10px;"></div>` : ''}
-                   </div>
-                `;
-                historyList.appendChild(card);
-            });
-        }
+        bookings.forEach(b => {
+            const card = document.createElement('div');
+            card.className = 'booking-card accepted-card';
+            card.innerHTML = `
+               <div class="booking-header">
+                  <h4>${b.service.toUpperCase()}</h4>
+                  <span class="badge badge-${b.status}">${b.status.toUpperCase()}</span>
+               </div>
+               <div class="booking-body">
+                  <p><strong>Customer:</strong> ${b.customer?.name || '---'}</p>
+                  <p><strong>Phone:</strong> ${b.customer?.phone || '---'}</p>
+                  <p><strong>Address:</strong> ${b.address}</p>
+                  <p><strong>Problem:</strong> ${b.problem}</p>
+               </div>
+            `;
+            historyList.appendChild(card);
+        });
     } catch (e) {
-        console.error("Error loading history:", e);
+        console.error("History load error:", e);
     }
 }
 
-// UI & Profile Functions
+// --- UI HELPERS ---
 
 function toggleProfile() {
-    const sidebar = document.getElementById("profileSidebar");
-    const overlay = document.getElementById("overlay");
-    if (sidebar) sidebar.classList.toggle("active");
-    if (overlay) overlay.classList.toggle("active");
+    document.getElementById("profileSidebar")?.classList.toggle("active");
+    document.getElementById("overlay")?.classList.toggle("active");
 }
 
 function enableWorkerEdit() {
-    document.getElementById("viewWName").style.display = "none";
-    document.getElementById("viewWPhone").style.display = "none";
-    document.getElementById("viewWAddress").style.display = "none";
-
-    document.getElementById("editWName").style.display = "block";
-    document.getElementById("editWPhone").style.display = "block";
-    document.getElementById("editWAddress").style.display = "block";
-
+    ["viewWName", "viewWPhone", "viewWAddress"].forEach(id => {
+        document.getElementById(id).style.display = "none";
+    });
+    ["editWName", "editWPhone", "editWAddress"].forEach(id => {
+        document.getElementById(id).style.display = "block";
+    });
     document.querySelector(".profile-save-btn").style.display = "block";
 }
 
 async function saveWorkerProfile() {
+    const fullName = document.getElementById('editWName').value.trim();
+    const phone = document.getElementById('editWPhone').value.trim();
+    const address = document.getElementById('editWAddress').value.trim();
+
+    // --- VALIDATION LOGIC ---
+
+    // A. Name Validation: Only letters (a-z, A-Z) and spaces allowed. 
+    const nameRegex = /^[a-zA-Z\s]+$/;
+    if (!nameRegex.test(fullName)) {
+        alert("Name should only contain letters.");
+        return;
+    }
+
+    // B. Phone Validation: Check if it is exactly 10 digits.
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+        alert("Phone number must be exactly 10 digits.");
+        return;
+    }
+
     const data = {
-        full_name: document.getElementById('editWName').value,
-        phone: document.getElementById('editWPhone').value,
-        address: document.getElementById('editWAddress').value
+        full_name: fullName,
+        phone: phone,
+        address: address
     };
 
     try {
@@ -244,23 +243,14 @@ async function saveWorkerProfile() {
         alert("Profile updated!");
         location.reload();
     } catch (e) {
-        console.error(e);
         alert("Update failed: " + e.message);
     }
 }
 
-async function declineBooking(bookingId) {
-    if (!confirm("Decline this job?")) return;
-    // UI behavior only for now as discussed in previous analysis
-    alert("Job declined (UI only).");
-    loadIncomingJobs();
-}
-
-// Make functions available globally used by onclick
+// Global Exports
 window.acceptJob = acceptJob;
 window.toggleProfile = toggleProfile;
 window.enableWorkerEdit = enableWorkerEdit;
 window.saveWorkerProfile = saveWorkerProfile;
-window.saveWorkerProfile = saveWorkerProfile;
-window.declineBooking = declineBooking;
 window.completeJob = completeJob;
+

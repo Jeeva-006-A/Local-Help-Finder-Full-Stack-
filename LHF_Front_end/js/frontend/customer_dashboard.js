@@ -1,20 +1,27 @@
+// This file handles all logic for the Customer Dashboard
+// It includes booking services and updating profiles.
+
+// 1. Get Customer ID from local storage
 const customerId = localStorage.getItem('user_id');
 const userType = localStorage.getItem('user_type');
 
+// Redirect to login page if user is not logged in as a customer
 if (!customerId || userType !== 'customer') {
     window.location.href = 'customer_login.html';
 }
 
+// Run these functions when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    loadProfile();
-    loadBookings();
+    loadProfile();  // Load profile data
+    loadBookings(); // Load previous bookings
 
+    // Call 'bookService' function when the booking form is submitted
     const bookingForm = document.querySelector('.booking-form');
     if (bookingForm) {
         bookingForm.addEventListener('submit', bookService);
     }
 
-    // Set min date to today
+    // Set minimum date for the date input to 'today'
     const dateInput = document.getElementById("date");
     if (dateInput) {
         const today = new Date().toISOString().split("T")[0];
@@ -22,21 +29,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// --- FUNCTIONS ---
+
+// A. Loads User profile
 async function loadProfile() {
     try {
         const data = await CustomerAPI.getProfile(customerId);
 
-        // View Mode
+        // Display details in HTML elements
         const viewName = document.getElementById('viewName');
         const viewEmail = document.getElementById('viewEmail');
         const viewPhone = document.getElementById('viewPhone');
         const viewAddress = document.getElementById('viewAddress');
+
         if (viewName) viewName.innerText = data.full_name;
         if (viewEmail) viewEmail.innerText = data.email;
         if (viewPhone) viewPhone.innerText = data.phone;
         if (viewAddress) viewAddress.innerText = data.address;
 
-        // Edit Mode inputs
+        // Fill input fields for edit mode
         const editName = document.getElementById('editName');
         const editPhone = document.getElementById('editPhone');
         const editAddress = document.getElementById('editAddress');
@@ -49,44 +60,66 @@ async function loadProfile() {
     }
 }
 
+// B. Books a new service
 async function bookService(event) {
-    event.preventDefault();
+    event.preventDefault(); // Stop page refresh
 
     if (!customerId) {
         alert("Please login first.");
         return;
     }
 
-    // Try to get phone from booking form first, else fallback
-    const phoneInput = document.getElementById('bookingPhone');
-    let phoneVal = phoneInput ? phoneInput.value : '';
-    if (!phoneVal) {
-        phoneVal = localStorage.getItem('user_phone') || document.getElementById('viewPhone').innerText;
+    // Get data from form inputs
+    const service = document.getElementById('service').value;
+    const problem = document.getElementById('problem').value;
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const address = document.getElementById('address').value;
+    const phone = document.getElementById('bookingPhone')?.value || localStorage.getItem('user_phone');
+
+    // --- VALIDATION LOGIC ---
+    // A. Check if required fields are empty
+    if (!service || !problem || !date || !time || !address) {
+        alert("Please fill all required fields - including address");
+        return;
+    }
+
+    // B. Problem description length check: Ensure it is not too short
+    if (problem.length < 10) {
+        alert("Please describe the problem in more detail (min 10 characters)");
+        return;
+    }
+
+    // C. Phone Validation: Check if it is exactly 10 digits.
+    const phoneRegex = /^\d{10}$/;
+    if (phone && !phoneRegex.test(phone)) {
+        alert("Phone number must be exactly 10 digits.");
+        return;
     }
 
     const data = {
-        service: document.getElementById('service').value,
-        problem: document.getElementById('problem').value,
-        date: document.getElementById('date').value,
-        time: document.getElementById('time').value,
-        address: document.getElementById('address').value,
-        phone: phoneVal
+        service: service,
+        problem: problem,
+        date: date,
+        time: time,
+        address: address,
+        phone: phone
     };
 
+    // Disable button to show loading effect
     const submitBtn = event.target.querySelector('button[type="submit"]');
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerText = "Booking...";
+        submitBtn.innerText = "Booking in progress...";
     }
 
     try {
         await BookingsAPI.create(customerId, data);
-        alert("Service booked successfully!");
-        const form = document.querySelector('.booking-form');
-        if (form) form.reset();
-        loadBookings();
+        alert("Service booked successfully! 🎉");
+        document.querySelector('.booking-form')?.reset();
+        loadBookings(); // Refresh the list
     } catch (error) {
-        console.error("Error booking service:", error);
+        console.error("An error occurred during booking:", error);
         alert("Booking failed: " + error.message);
     } finally {
         if (submitBtn) {
@@ -96,27 +129,28 @@ async function bookService(event) {
     }
 }
 
+// C. Fetch and display bookings
 async function loadBookings() {
     try {
         const bookings = await BookingsAPI.getForCustomer(customerId);
-        renderBookings(bookings);
+        renderBookings(bookings); // Render in the UI
     } catch (error) {
         console.error("Error loading bookings:", error);
     }
 }
 
+// Display bookings as cards in the UI
 function renderBookings(bookings) {
     const container = document.getElementById('bookings-container');
-
     if (!container) return;
 
-    container.innerHTML = '';
+    container.innerHTML = ''; // Clear container first
 
-    // Filter out cancelled bookings to avoid "double show"
+    // Filter out cancelled bookings
     const displayBookings = bookings.filter(b => b.status !== 'cancelled');
 
     if (displayBookings.length === 0) {
-        container.innerHTML = '<p id="no-bookings-msg" style="text-align: center; color: #666; margin-top: 20px;">No active bookings found.</p>';
+        container.innerHTML = '<p style="text-align: center; color: #666; margin-top: 20px;">No active bookings.</p>';
         updateStats(bookings);
         return;
     }
@@ -127,80 +161,37 @@ function renderBookings(bookings) {
         const card = document.createElement('div');
         card.className = `booking-card ${booking.status === 'accepted' ? 'accepted-card' : ''}`;
 
-        let statusBadge = '';
-        if (booking.status === 'pending') {
-            statusBadge = `<span class="badge badge-pending"><i class="fas fa-hourglass-half"></i> Pending</span>`;
-        } else if (booking.status === 'accepted') {
-            statusBadge = `<span class="badge badge-accepted"><i class="fas fa-check-circle"></i> Accepted</span>`;
-        } else if (booking.status === 'completed') {
-            statusBadge = `<span class="badge badge-completed"><i class="fas fa-check-double"></i> Completed</span>`;
-        }
+        // Status badge logic
+        let statusBadge = `<span class="badge badge-${booking.status}">${booking.status.toUpperCase()}</span>`;
 
-        let workerInfo = '';
-        if (booking.worker) {
-            workerInfo = `<p><strong>Worker:</strong> ${booking.worker.name}</p>
-                          <p><strong>Worker Phone:</strong> ${booking.worker.phone}</p>`;
-        } else if (booking.status === 'pending') {
-            workerInfo = `<p><strong>Status:</strong> Waiting for worker...</p>`;
-        } else {
-            workerInfo = `<p><strong>Status:</strong> ${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</p>`;
-        }
-
-        // Add Cancel button if pending
-        let actionButtons = '';
-        if (booking.status === 'pending') {
-            actionButtons = `<div class="booking-actions">
-                <button class="btn btn-outline btn-small" onclick="cancelBooking(${booking.booking_id})">
-                  <i class="fas fa-times"></i> Cancel Booking
-                </button>
-              </div>`;
-        } else if (booking.status === 'accepted') {
-            actionButtons = `<div class="booking-actions">
-                <button class="btn btn-primary btn-small" onclick="completeBooking(${booking.booking_id}, ${booking.worker ? (booking.worker.worker_id || booking.worker.id || 'null') : 'null'})">
-                  <i class="fas fa-check-double"></i> Completed
-                </button>
-              </div>`;
-        }
-
+        // Card content creation
         card.innerHTML = `
             <div class="booking-header">
-                <h4><i class="fas fa-wrench"></i> ${booking.service ? booking.service.toUpperCase() : 'SERVICE'} Service</h4>
+                <h4><i class="fas fa-wrench"></i> ${booking.service.toUpperCase()}</h4>
                 ${statusBadge}
             </div>
             <div class="booking-body">
                 <p><strong>Problem:</strong> ${booking.problem}</p>
-                <p><strong>Scheduled:</strong> ${booking.date} at ${booking.time}</p>
-                 <p><strong>Address:</strong> ${booking.address}</p>
-                ${workerInfo}
-                ${actionButtons}
+                <p><strong>Time:</strong> ${booking.date} at ${booking.time}</p>
+                <p><strong>Worker:</strong> ${booking.worker ? booking.worker.name : 'Waiting for worker...'}</p>
+            </div>
+            <div class="booking-actions">
+                ${booking.status === 'pending' ? `<button onclick="cancelBooking(${booking.booking_id})" class="btn-cancel">Cancel</button>` : ''}
+                ${booking.status === 'accepted' ? `<button onclick="completeBooking(${booking.booking_id}, ${booking.worker?.id})" class="btn-complete">Mark as Done</button>` : ''}
             </div>
         `;
         container.appendChild(card);
     });
 }
 
-
-
-async function completeBooking(bookingId, workerId) {
-    if (!confirm("Are you sure you want to mark this job as completed?")) return;
-
-    try {
-        await BookingsAPI.updateStatus(bookingId, 'completed', workerId);
-        alert("Job completed!");
-        loadBookings();
-    } catch (error) {
-        console.error("Error completing job:", error);
-        alert("Error: " + error.message);
-    }
-}
-
+// Update stats counts
 function updateStats(bookings) {
     const completedCount = bookings.filter(b => b.status === "completed").length;
     const completedEl = document.getElementById("completedCount");
     if (completedEl) completedEl.innerText = completedCount;
 }
 
-// Add Cancel Implementation
+// Cancel Booking logic
 async function cancelBooking(bookingId) {
     if (!confirm("Are you sure you want to cancel?")) return;
 
@@ -209,60 +200,85 @@ async function cancelBooking(bookingId) {
         alert("Booking cancelled.");
         loadBookings();
     } catch (error) {
-        console.error(error);
         alert("Error: " + error.message);
     }
 }
 
-// UI Functions & Profile Update
-function toggleProfile() {
-    const sidebar = document.getElementById("profileSidebar");
-    const overlay = document.getElementById("overlay");
-    if (sidebar) sidebar.classList.toggle("active");
-    if (overlay) overlay.classList.toggle("active");
+// Complete Booking logic
+async function completeBooking(bookingId, workerId) {
+    if (!confirm("Confirm that the job is done?")) return;
+
+    try {
+        await BookingsAPI.updateStatus(bookingId, 'completed', workerId);
+        alert("Job completed! ✅");
+        loadBookings();
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
 }
 
-function enableEdit() {
-    const viewName = document.getElementById("viewName");
-    const viewPhone = document.getElementById("viewPhone");
-    const viewAddress = document.getElementById("viewAddress");
-    const editName = document.getElementById("editName");
-    const editPhone = document.getElementById("editPhone");
-    const editAddress = document.getElementById("editAddress");
-    const saveBtn = document.querySelector(".profile-save-btn");
-
-    if (viewName) viewName.style.display = "none";
-    if (viewPhone) viewPhone.style.display = "none";
-    if (viewAddress) viewAddress.style.display = "none";
-
-    if (editName) editName.style.display = "block";
-    if (editPhone) editPhone.style.display = "block";
-    if (editAddress) editAddress.style.display = "block";
-
-    if (saveBtn) saveBtn.style.display = "block";
-}
-
+// Profile update Logic
 async function saveProfile() {
+    const fullName = document.getElementById('editName').value.trim();
+    const phone = document.getElementById('editPhone').value.trim();
+    const address = document.getElementById('editAddress').value.trim();
+
+    // --- VALIDATION LOGIC ---
+
+    // A. Name Validation: Only letters (a-z, A-Z) and spaces allowed. 
+    const nameRegex = /^[a-zA-Z\s]+$/;
+    if (!nameRegex.test(fullName)) {
+        alert("Name should only contain letters!");
+        return;
+    }
+
+    // B. Phone Validation: Check if it is exactly 10 digits.
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+        alert("Phone number must be exactly 10 digits!");
+        return;
+    }
+
     const data = {
-        full_name: document.getElementById('editName').value,
-        phone: document.getElementById('editPhone').value,
-        address: document.getElementById('editAddress').value
+        full_name: fullName,
+        phone: phone,
+        address: address
     };
 
     try {
         await CustomerAPI.updateProfile(customerId, data);
-        alert("Profile updated!");
-        location.reload();
+        alert("Profile updated successfully!");
+        location.reload(); // Refresh page to update details
     } catch (error) {
-        console.error(error);
         alert("Update failed: " + error.message);
     }
 }
 
-// Global Exports
+// UI features toggle
+function toggleProfile() {
+    document.getElementById("profileSidebar")?.classList.toggle("active");
+    document.getElementById("overlay")?.classList.toggle("active");
+}
+
+function enableEdit() {
+    // Hide text, show inputs
+    ["viewName", "viewPhone", "viewAddress"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = "none";
+    });
+    ["editName", "editPhone", "editAddress"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = "block";
+    });
+    const saveBtn = document.querySelector(".profile-save-btn");
+    if (saveBtn) saveBtn.style.display = "block";
+}
+
+// Global Exports - For other components to use
 window.toggleProfile = toggleProfile;
 window.enableEdit = enableEdit;
 window.saveProfile = saveProfile;
 window.bookService = bookService;
 window.cancelBooking = cancelBooking;
 window.completeBooking = completeBooking;
+

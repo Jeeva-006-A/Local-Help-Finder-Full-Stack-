@@ -91,12 +91,12 @@ body {
 }
 
 .nav-links a:hover {
-    color: white;
+    color: var(--accent);
 }
 
 /* Hero Content */
 .left-section {
-    flex: 1.2;
+    flex: 1;
     padding: 5rem;
     display: flex;
     flex-direction: column;
@@ -136,11 +136,12 @@ body {
 }
 
 h1 {
-    font-size: 4rem;
+    font-size: 4.5rem;
     font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
+    line-height: 1.05;
+    margin-bottom: 2rem;
     color: var(--text-main);
+    letter-spacing: -3px;
 }
 
 .gradient-text {
@@ -180,22 +181,22 @@ h1 {
 
 /* Login Card Section */
 .right-section {
-    flex: 0.8;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 5rem 2rem;
     background-color: #f1f5f9;
 }
 
 .login-box {
     width: 100%;
-    max-width: 440px;
-    background: rgba(255, 255, 255, 0.9);
+    max-width: 460px;
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
-    padding: 4rem 3rem;
+    padding: 4.5rem 3.5rem;
     box-shadow: var(--shadow-premium);
     transition: var(--transition);
 }
