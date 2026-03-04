@@ -21,6 +21,7 @@ class Booking(Base):
     time = Column(String)     # Booking time (e.g. 10:00 AM)
     address = Column(String)  # Service location address
     phone = Column(String)    # Customer/Worker contact phone
+    problem_photo = Column(String, nullable=True) # Photo of the problem (Cloudinary URL)
     status = Column(String, default="pending") # Status: pending, accepted, completed
 
     # Relationships: To link the DB models

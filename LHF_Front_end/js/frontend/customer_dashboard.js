@@ -60,6 +60,16 @@ async function loadProfile() {
     }
 }
 
+// Helper function to convert file to Base64
+function toBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
 // B. Books a new service
 async function bookService(event) {
     event.preventDefault(); // Stop page refresh
@@ -76,6 +86,7 @@ async function bookService(event) {
     const time = document.getElementById('time').value;
     const address = document.getElementById('address').value;
     const phone = document.getElementById('bookingPhone')?.value || localStorage.getItem('user_phone');
+    const photoInput = document.getElementById('problemPhoto');
 
     // --- VALIDATION LOGIC ---
     // A. Check if required fields are empty
@@ -97,13 +108,24 @@ async function bookService(event) {
         return;
     }
 
+    // D. Photo handling
+    let problemPhotoBase64 = null;
+    if (photoInput && photoInput.files.length > 0) {
+        try {
+            problemPhotoBase64 = await toBase64(photoInput.files[0]);
+        } catch (error) {
+            console.error("Error converting photo to base64:", error);
+        }
+    }
+
     const data = {
         service: service,
         problem: problem,
         date: date,
         time: time,
         address: address,
-        phone: phone
+        phone: phone,
+        problem_photo: problemPhotoBase64
     };
 
     // Disable button to show loading effect
@@ -124,7 +146,7 @@ async function bookService(event) {
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerText = "Book Service";
+            submitBtn.innerText = "Book Service Now";
         }
     }
 }
@@ -147,7 +169,7 @@ function renderBookings(bookings) {
     container.innerHTML = ''; // Clear container first
 
     // Filter out cancelled bookings
-    const displayBookings = bookings.filter(b => b.status !== 'cancelled');
+    const displayBookings = bookings.sort((a, b) => b.booking_id - a.booking_id).filter(b => b.status !== 'cancelled');
 
     if (displayBookings.length === 0) {
         container.innerHTML = '<p style="text-align: center; color: #666; margin-top: 20px;">No active bookings.</p>';
@@ -172,12 +194,23 @@ function renderBookings(bookings) {
             </div>
             <div class="booking-body">
                 <p><strong>Problem:</strong> ${booking.problem}</p>
+                ${booking.problem_photo ? `
+                    <div class="problem-photo-container" style="margin: 10px 0;">
+                        <img src="${booking.problem_photo}" alt="Problem Photo" style="max-width: 100%; border-radius: 8px; border: 1px solid #ddd; cursor: pointer;" onclick="window.open('${booking.problem_photo}', '_blank')">
+                    </div>
+                ` : ''}
                 <p><strong>Time:</strong> ${booking.date} at ${booking.time}</p>
-                <p><strong>Worker:</strong> ${booking.worker ? booking.worker.name : 'Waiting for worker...'}</p>
+                <div class="worker-details" style="${booking.worker ? 'margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1;' : ''}">
+                    <p><strong>Worker:</strong> ${booking.worker ? booking.worker.name : 'Waiting for worker...'}</p>
+                    ${booking.worker ? `
+                        <p><strong><i class="fas fa-phone"></i> Phone:</strong> ${booking.worker.phone}</p>
+                        <p><strong><i class="fas fa-map-marker-alt"></i> Address:</strong> ${booking.worker.address}</p>
+                    ` : ''}
+                </div>
             </div>
             <div class="booking-actions">
                 ${booking.status === 'pending' ? `<button onclick="cancelBooking(${booking.booking_id})" class="btn-cancel">Cancel</button>` : ''}
-                ${booking.status === 'accepted' ? `<button onclick="completeBooking(${booking.booking_id}, ${booking.worker?.id})" class="btn-complete">Mark as Done</button>` : ''}
+                ${booking.status === 'accepted' ? `<button onclick="completeBooking(${booking.booking_id}, ${booking.worker?.id})" class="btn-complete"><i class="fas fa-check-circle"></i> Mark as Done</button>` : ''}
             </div>
         `;
         container.appendChild(card);

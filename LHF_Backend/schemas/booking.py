@@ -12,6 +12,7 @@ class BookingCreate(BaseModel):
     time: str
     address: str
     phone: str
+    problem_photo: Optional[str] = None # Base64 string of the photo
 
 # 2. Schema to change booking status (e.g., Pending -> Accepted).
 class BookingStatusUpdate(BaseModel):

@@ -113,6 +113,7 @@ def get_incoming_jobs(worker_id: int, db: Session = Depends(get_db)):
             "booking_id": b.id,
             "service": b.service,
             "problem": b.problem,
+            "problem_photo": b.problem_photo,
             "date": b.date,
             "time": b.time,
             "address": b.address,

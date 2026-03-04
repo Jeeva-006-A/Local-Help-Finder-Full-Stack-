@@ -39,6 +39,12 @@ async def lifespan(app: FastAPI):
                 conn.execute(text("ALTER TABLE workers ADD COLUMN IF NOT EXISTS status VARCHAR DEFAULT 'pending'"))
                 conn.commit()
             except Exception: pass
+
+            # Add problem_photo column to bookings table if it's missing
+            try:
+                conn.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS problem_photo VARCHAR"))
+                conn.commit()
+            except Exception: pass
             
     except Exception as e:
         print(f"Database setup error (DB failed to initialize): {e}")

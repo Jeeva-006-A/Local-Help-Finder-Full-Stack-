@@ -167,6 +167,29 @@ body {
     font-size: 1em;
 }
 
+/* Mark as Done Button - Large highlight */
+.btn-complete {
+    background: #10b981;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 1.1em;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-complete:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
 .form-row .btn-full {
     grid-column: 1 / -1;
 }

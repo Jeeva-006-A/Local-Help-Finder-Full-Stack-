@@ -121,6 +121,11 @@ function renderIncomingJobs(jobs) {
             </div>
             <div class="booking-body">
                 <p><strong>Problem:</strong> ${job.problem}</p>
+                ${job.problem_photo ? `
+                    <div class="problem-photo-container" style="margin: 10px 0;">
+                        <img src="${job.problem_photo}" alt="Problem Photo" style="max-width: 100%; border-radius: 8px; border: 1px solid #ddd; cursor: pointer;" onclick="window.open('${job.problem_photo}', '_blank')">
+                    </div>
+                ` : ''}
                 <p><strong>Address:</strong> ${job.address}</p>
                 <p><strong>Date:</strong> ${job.date} ${job.time}</p>
                 <div class="booking-actions">
@@ -185,6 +190,11 @@ async function loadHistory() {
                   <p><strong>Phone:</strong> ${b.customer?.phone || '---'}</p>
                   <p><strong>Address:</strong> ${b.address}</p>
                   <p><strong>Problem:</strong> ${b.problem}</p>
+                  ${b.problem_photo ? `
+                    <div class="problem-photo-container" style="margin: 10px 0;">
+                        <img src="${b.problem_photo}" alt="Problem Photo" style="max-width: 100%; border-radius: 8px; border: 1px solid #ddd; cursor: pointer;" onclick="window.open('${b.problem_photo}', '_blank')">
+                    </div>
+                  ` : ''}
                </div>
             `;
             historyList.appendChild(card);
