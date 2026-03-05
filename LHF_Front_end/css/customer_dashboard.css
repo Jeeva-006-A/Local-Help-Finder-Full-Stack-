@@ -167,14 +167,14 @@ body {
     font-size: 1em;
 }
 
-/* Mark as Done Button - Large highlight */
+/* Mark as Done Button - Adjusted size */
 .btn-complete {
     background: #10b981;
     color: white;
-    padding: 14px 28px;
-    border-radius: 12px;
-    font-size: 1.1em;
-    font-weight: 700;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 0.95em;
+    font-weight: 600;
     border: none;
     cursor: pointer;
     transition: var(--transition);
@@ -187,7 +187,28 @@ body {
 .btn-complete:hover {
     background: #059669;
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3);
+}
+
+/* Cancel Button - Colored and Decent Size */
+.btn-cancel {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 0.95em;
+    font-weight: 600;
+    border: 1px solid #fecaca;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-block;
+}
+
+.btn-cancel:hover {
+    background: #dc2626;
+    color: white;
+    border-color: #dc2626;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
 }
 
 .form-row .btn-full {

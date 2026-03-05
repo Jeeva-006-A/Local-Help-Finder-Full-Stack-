@@ -11,6 +11,8 @@ if (!workerId || userType !== 'worker') {
     window.location.href = 'worker_login.html';
 }
 
+let currentFilter = 'all';
+
 // Run these tasks when the page is ready
 document.addEventListener('DOMContentLoaded', () => {
     loadProfile();       // Load worker profile
@@ -30,6 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
     }
+
+    // --- FILTER CLICKS ---
+    const totalCard = document.getElementById('totalJobs')?.closest('.stat-card');
+    const acceptedCard = document.getElementById('acceptedJobs')?.closest('.stat-card');
+    const completedCard = document.getElementById('completedJobs')?.closest('.stat-card');
+
+    if (totalCard) totalCard.onclick = () => { currentFilter = 'all'; loadHistory(); };
+    if (acceptedCard) acceptedCard.onclick = () => { currentFilter = 'accepted'; loadHistory(); };
+    if (completedCard) completedCard.onclick = () => { currentFilter = 'completed'; loadHistory(); };
 
     // Set UI icons/symbols based on Worker Category
     setupCategoryUI();
@@ -122,8 +133,8 @@ function renderIncomingJobs(jobs) {
             <div class="booking-body">
                 <p><strong>Problem:</strong> ${job.problem}</p>
                 ${job.problem_photo ? `
-                    <div class="problem-photo-container" style="margin: 10px 0;">
-                        <img src="${job.problem_photo}" alt="Problem Photo" style="max-width: 100%; border-radius: 8px; border: 1px solid #ddd; cursor: pointer;" onclick="window.open('${job.problem_photo}', '_blank')">
+                    <div class="problem-photo-container" style="margin: 15px 0; width: 100%; height: 200px; overflow: hidden; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <img src="${job.problem_photo}" alt="Problem Photo" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: transform 0.3s;" onclick="window.open('${job.problem_photo}', '_blank')">
                     </div>
                 ` : ''}
                 <p><strong>Address:</strong> ${job.address}</p>
@@ -170,6 +181,8 @@ async function loadHistory() {
     try {
         const bookings = await BookingsAPI.getForWorker(workerId);
         const historyList = document.getElementById('historyList');
+        const historySection = document.getElementById('jobHistory');
+
         if (historyList) historyList.innerHTML = '';
 
         // Update counts
@@ -177,28 +190,53 @@ async function loadHistory() {
         document.getElementById('completedJobs').innerText = bookings.filter(b => b.status === 'completed').length;
         document.getElementById('totalJobs').innerText = bookings.length;
 
-        bookings.forEach(b => {
-            const card = document.createElement('div');
-            card.className = 'booking-card accepted-card';
-            card.innerHTML = `
-               <div class="booking-header">
-                  <h4>${b.service.toUpperCase()}</h4>
-                  <span class="badge badge-${b.status}">${b.status.toUpperCase()}</span>
-               </div>
-               <div class="booking-body">
-                  <p><strong>Customer:</strong> ${b.customer?.name || '---'}</p>
-                  <p><strong>Phone:</strong> ${b.customer?.phone || '---'}</p>
-                  <p><strong>Address:</strong> ${b.address}</p>
-                  <p><strong>Problem:</strong> ${b.problem}</p>
-                  ${b.problem_photo ? `
-                    <div class="problem-photo-container" style="margin: 10px 0;">
-                        <img src="${b.problem_photo}" alt="Problem Photo" style="max-width: 100%; border-radius: 8px; border: 1px solid #ddd; cursor: pointer;" onclick="window.open('${b.problem_photo}', '_blank')">
-                    </div>
-                  ` : ''}
-               </div>
-            `;
-            historyList.appendChild(card);
-        });
+        // Visual feedback for filter
+        document.querySelectorAll('.stat-card').forEach(c => c.style.borderColor = 'var(--border)');
+        if (currentFilter === 'all') document.getElementById('totalJobs').closest('.stat-card').style.borderColor = 'var(--brand-color)';
+        if (currentFilter === 'accepted') document.getElementById('acceptedJobs').closest('.stat-card').style.borderColor = 'var(--brand-color)';
+        if (currentFilter === 'completed') document.getElementById('completedJobs').closest('.stat-card').style.borderColor = 'var(--brand-color)';
+
+        // Filter the list
+        const filteredBookings = currentFilter === 'all'
+            ? bookings
+            : bookings.filter(b => b.status === currentFilter);
+
+        if (filteredBookings.length > 0) {
+            historySection.style.display = 'block';
+
+            // Show latest first
+            filteredBookings.sort((a, b) => b.booking_id - a.booking_id).forEach(b => {
+                const card = document.createElement('div');
+                card.className = `booking-card ${b.status}-card`;
+                card.innerHTML = `
+                   <div class="booking-header">
+                      <h4>${b.service.toUpperCase()}</h4>
+                      <span class="badge badge-${b.status}">${b.status === 'completed' ? 'Job Completed' : (b.status === 'accepted' ? 'Accepted' : b.status.toUpperCase())}</span>
+                   </div>
+                   <div class="booking-body">
+                      <p><strong><i class="fas fa-user"></i> Customer:</strong> ${b.customer?.name || '---'}</p>
+                      <p><strong><i class="fas fa-phone"></i> Phone:</strong> ${b.customer?.phone || '---'}</p>
+                      <p><strong><i class="fas fa-map-marker-alt"></i> Address:</strong> ${b.address}</p>
+                      <p><strong><i class="fas fa-info-circle"></i> Problem:</strong> ${b.problem}</p>
+                      ${b.problem_photo ? `
+                        <div class="problem-photo-container" style="margin: 15px 0; width: 100%; height: 200px; overflow: hidden; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            <img src="${b.problem_photo}" alt="Problem Photo" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: transform 0.3s;" onclick="window.open('${b.problem_photo}', '_blank')">
+                        </div>
+                      ` : ''}
+                   </div>
+
+                `;
+                historyList.appendChild(card);
+            });
+        } else {
+            // If filtering and no results, show a message or hide section
+            if (currentFilter !== 'all') {
+                historySection.style.display = 'block';
+                historyList.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px;">No ${currentFilter} jobs found.</p>`;
+            } else {
+                historySection.style.display = 'none';
+            }
+        }
     } catch (e) {
         console.error("History load error:", e);
     }
@@ -263,4 +301,3 @@ window.toggleProfile = toggleProfile;
 window.enableWorkerEdit = enableWorkerEdit;
 window.saveWorkerProfile = saveWorkerProfile;
 window.completeJob = completeJob;
-
