@@ -1,5 +1,3 @@
-# This file handles booking-related backend logic (Handles Bookings logic).
-# It includes logic for customer service requests and worker job acceptance.
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -10,10 +8,8 @@ import cloudinary
 import cloudinary.uploader
 import os
 
-# 1. Create the router
 router = APIRouter(prefix="/bookings", tags=["Bookings"])
 
-# 2. Database connection helper
 def get_db():
     db = SessionLocal()
     try:
@@ -21,7 +17,6 @@ def get_db():
     finally:
         db.close()
 
-# 3. Cloudinary Setup: Helps store images in the cloud.
 cloudinary.config(
     cloud_name="drwxklysw",
     api_key="774271779353514",
@@ -29,9 +24,7 @@ cloudinary.config(
     secure=True
 )
 
-# --- ROUTES ---
 
-# A. CREATE: Create a new service booking (New Booking)
 @router.post("/")
 def create_booking(
     customer_id: int,
@@ -40,7 +33,6 @@ def create_booking(
 ):
     booking_data = data.model_dump()
     
-    # If a problem photo is sent (Base64 string), upload it to Cloudinary
     if data.problem_photo:
         try:
             upload_result = cloudinary.uploader.upload(data.problem_photo, folder="lhf_booking_problems")
@@ -48,7 +40,6 @@ def create_booking(
         except Exception as e:
             raise HTTPException(500, f"Photo upload failed: {str(e)}")
 
-    # Convert data sent by the customer to the DB model
     new_booking = Booking(
         customer_id=customer_id,
         service=booking_data["service"],
@@ -58,7 +49,7 @@ def create_booking(
         address=booking_data["address"],
         phone=booking_data["phone"],
         problem_photo=booking_data.get("problem_photo"),
-        status="pending" # Default status is always pending at the start
+        status="pending"
     )
 
     db.add(new_booking)
@@ -67,14 +58,12 @@ def create_booking(
 
     return {"message": "Booking created successfully!"}
 
-# B. UPDATE STATUS: Update booking status (e.g., Pending -> Accepted -> Completed)
 @router.put("/{booking_id}/status")
 def update_booking_status(
     booking_id: int,
     data: BookingStatusUpdate,
     db: Session = Depends(get_db)
 ):
-    # Check if the booking exists for the given ID
     booking = db.query(Booking).filter(Booking.id == booking_id).first()
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
@@ -82,7 +71,6 @@ def update_booking_status(
     update_data = data.model_dump()
     booking.status = update_data["status"]
 
-    # Worker ID is required to accept a job
     if update_data["status"] == "accepted":
          if update_data.get("worker_id") is None:
              raise HTTPException(400, "Worker ID required to accept job")
@@ -92,7 +80,6 @@ def update_booking_status(
     db.commit()
     return {"message": f"Booking {update_data['status']} successfully!"}
 
-# C. CUSTOMER BOOKINGS: Fetch all bookings made by a specific customer
 @router.get("/customer/{customer_id}")
 def customer_bookings(
     customer_id: int,
@@ -102,7 +89,6 @@ def customer_bookings(
         Booking.customer_id == customer_id
     ).all()
 
-    # Send the data in list format
     return [
         {
             "booking_id": b.id,
@@ -124,7 +110,6 @@ def customer_bookings(
         for b in bookings
     ]
 
-# D. WORKER BOOKINGS: Fetch all bookings accepted by a specific worker
 @router.get("/worker/{worker_id}")
 def worker_bookings(
     worker_id: int,

@@ -1,25 +1,19 @@
-// This file handles logic for the Worker Dashboard
-// Workers can accept jobs and view their history here.
 
-// 1. Get Worker details from local storage
 const workerId = localStorage.getItem('user_id');
 const userType = localStorage.getItem('user_type');
 const workerCategory = localStorage.getItem('worker_category');
 
-// Redirect to worker login page if not logged in
 if (!workerId || userType !== 'worker') {
     window.location.href = 'worker_login.html';
 }
 
 let currentFilter = 'all';
 
-// Run these tasks when the page is ready
 document.addEventListener('DOMContentLoaded', () => {
-    loadProfile();       // Load worker profile
-    loadIncomingJobs();  // Check for new jobs
-    loadHistory();       // Show completed/history jobs
+    loadProfile();
+    loadIncomingJobs();
+    loadHistory();
 
-    // Notify worker if the account is still pending admin verification
     const workerStatus = localStorage.getItem('worker_status');
     if (workerStatus === 'pending') {
         const jobsContainer = document.getElementById('incoming-jobs');
@@ -33,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- FILTER CLICKS ---
     const totalCard = document.getElementById('totalJobs')?.closest('.stat-card');
     const acceptedCard = document.getElementById('acceptedJobs')?.closest('.stat-card');
     const completedCard = document.getElementById('completedJobs')?.closest('.stat-card');
@@ -42,11 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (acceptedCard) acceptedCard.onclick = () => { currentFilter = 'accepted'; loadHistory(); };
     if (completedCard) completedCard.onclick = () => { currentFilter = 'completed'; loadHistory(); };
 
-    // Set UI icons/symbols based on Worker Category
     setupCategoryUI();
 });
 
-// Function to handle category symbols
 function setupCategoryUI() {
     const categoryData = {
         plumber: { icon: "fas fa-faucet", name: "PLUMBER" },
@@ -64,14 +55,11 @@ function setupCategoryUI() {
     }
 }
 
-// --- CORE FUNCTIONS ---
 
-// A. Load worker profile details
 async function loadProfile() {
     try {
         const data = await WorkerAPI.getProfile(workerId);
 
-        // Insert data into HTML elements
         document.getElementById('viewWName').innerText = data.full_name;
         document.getElementById('viewWEmail').innerText = data.email;
         document.getElementById('viewWPhone').innerText = data.phone;
@@ -79,14 +67,12 @@ async function loadProfile() {
         document.getElementById('profileCategory').innerText = data.category;
         document.getElementById('viewWExperience').innerText = data.experience + " Years";
 
-        // Status badge logic
         const statusEl = document.getElementById('viewWStatus');
         if (statusEl) {
             statusEl.innerText = data.status.toUpperCase();
             statusEl.className = `badge badge-${data.status}`;
         }
 
-        // Fill input fields for editing
         document.getElementById('editWName').value = data.full_name;
         document.getElementById('editWPhone').value = data.phone;
         document.getElementById('editWAddress').value = data.address;
@@ -96,7 +82,6 @@ async function loadProfile() {
     }
 }
 
-// B. Fetch new incoming jobs
 async function loadIncomingJobs() {
     try {
         const jobs = await WorkerAPI.getIncomingJobs(workerId);
@@ -106,19 +91,15 @@ async function loadIncomingJobs() {
     }
 }
 
-// Render job requests as cards in the UI
 function renderIncomingJobs(jobs) {
-    // Find the container for the specific category
     let container = document.getElementById(`${workerCategory.toLowerCase()}Jobs`);
     if (!container) return;
 
     container.style.display = 'block';
 
-    // Update the total count of requests
     const newRequestsCount = document.getElementById('newRequests');
     if (newRequestsCount) newRequestsCount.innerText = jobs.length;
 
-    // Clear existing cards and add new ones
     const existingCards = container.querySelectorAll('.booking-card');
     existingCards.forEach(c => c.remove());
 
@@ -148,22 +129,19 @@ function renderIncomingJobs(jobs) {
     });
 }
 
-// C. Logic to accept a job
 async function acceptJob(bookingId) {
     if (!confirm("Are you sure you want to accept this job?")) return;
 
     try {
-        // Send status update to API as 'accepted'
         await BookingsAPI.updateStatus(bookingId, 'accepted', parseInt(workerId));
         alert("Job accepted successfully!");
-        loadIncomingJobs(); // Refresh job cards
-        loadHistory();      // Update history list
+        loadIncomingJobs();
+        loadHistory();
     } catch (error) {
         alert("Error: " + error.message);
     }
 }
 
-// D. Logic to mark a job as completed
 async function completeJob(bookingId) {
     if (!confirm("Confirm that the job is completed?")) return;
 
@@ -176,7 +154,6 @@ async function completeJob(bookingId) {
     }
 }
 
-// E. Load Job History (completed tasks)
 async function loadHistory() {
     try {
         const bookings = await BookingsAPI.getForWorker(workerId);
@@ -185,18 +162,15 @@ async function loadHistory() {
 
         if (historyList) historyList.innerHTML = '';
 
-        // Update counts
         document.getElementById('acceptedJobs').innerText = bookings.filter(b => b.status === 'accepted').length;
         document.getElementById('completedJobs').innerText = bookings.filter(b => b.status === 'completed').length;
         document.getElementById('totalJobs').innerText = bookings.length;
 
-        // Visual feedback for filter
         document.querySelectorAll('.stat-card').forEach(c => c.style.borderColor = 'var(--border)');
         if (currentFilter === 'all') document.getElementById('totalJobs').closest('.stat-card').style.borderColor = 'var(--brand-color)';
         if (currentFilter === 'accepted') document.getElementById('acceptedJobs').closest('.stat-card').style.borderColor = 'var(--brand-color)';
         if (currentFilter === 'completed') document.getElementById('completedJobs').closest('.stat-card').style.borderColor = 'var(--brand-color)';
 
-        // Filter the list
         const filteredBookings = currentFilter === 'all'
             ? bookings
             : bookings.filter(b => b.status === currentFilter);
@@ -204,7 +178,6 @@ async function loadHistory() {
         if (filteredBookings.length > 0) {
             historySection.style.display = 'block';
 
-            // Show latest first
             filteredBookings.sort((a, b) => b.booking_id - a.booking_id).forEach(b => {
                 const card = document.createElement('div');
                 card.className = `booking-card ${b.status}-card`;
@@ -229,7 +202,6 @@ async function loadHistory() {
                 historyList.appendChild(card);
             });
         } else {
-            // If filtering and no results, show a message or hide section
             if (currentFilter !== 'all') {
                 historySection.style.display = 'block';
                 historyList.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px;">No ${currentFilter} jobs found.</p>`;
@@ -242,7 +214,6 @@ async function loadHistory() {
     }
 }
 
-// --- UI HELPERS ---
 
 function toggleProfile() {
     document.getElementById("profileSidebar")?.classList.toggle("active");
@@ -264,16 +235,13 @@ async function saveWorkerProfile() {
     const phone = document.getElementById('editWPhone').value.trim();
     const address = document.getElementById('editWAddress').value.trim();
 
-    // --- VALIDATION LOGIC ---
 
-    // A. Name Validation: Only letters (a-z, A-Z) and spaces allowed. 
     const nameRegex = /^[a-zA-Z\s]+$/;
     if (!nameRegex.test(fullName)) {
         alert("Name should only contain letters.");
         return;
     }
 
-    // B. Phone Validation: Check if it is exactly 10 digits.
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(phone)) {
         alert("Phone number must be exactly 10 digits.");
@@ -295,7 +263,6 @@ async function saveWorkerProfile() {
     }
 }
 
-// Global Exports
 window.acceptJob = acceptJob;
 window.toggleProfile = toggleProfile;
 window.enableWorkerEdit = enableWorkerEdit;

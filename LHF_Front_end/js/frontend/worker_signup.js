@@ -1,17 +1,15 @@
-// This code handles Worker registration
-// It collects name, email, category, experience, and other details.
-
+// This code handles signing up a new Worker
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. Get the signup form from HTML
+    // Find the signup form on the page
     const signupForm = document.getElementById('workerSignupForm');
 
     if (signupForm) {
-        // This function runs when the 'Register' button is clicked
+        // Runs when the worker clicks "Join as Partner"
         signupForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Stop page reload
+            event.preventDefault(); // Stop the page from reloading
 
-            // 2. Get input values
+            // Get all the info typed by the worker
             const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
@@ -21,68 +19,68 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
-            // --- VALIDATION LOGIC ---
+            // --- CHECKS (Validation) ---
 
-            // A. Name Validation: Only letters (a-z, A-Z) and spaces allowed.
-            // Numbers or special characters are not allowed.
+            // Check if name has only letters
             const nameRegex = /^[a-zA-Z\s]+$/;
             if (!nameRegex.test(name)) {
                 alert("Name should only contain letters.");
                 return;
             }
 
-            // B. Email Validation: Check for a valid email format.
+            // Check if email looks correct
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 alert("Please enter a valid email address.");
                 return;
             }
 
-            // C. Phone Validation: Check if it is exactly 10 digits.
+            // Check if phone number is 10 digits
             const phoneRegex = /^\d{10}$/;
             if (!phoneRegex.test(phone)) {
                 alert("Phone number must be exactly 10 digits.");
                 return;
             }
 
-            // D. Category Validation: Ensure a category is selected.
+            // Check if service category is selected
             if (!category) {
                 alert("Please select a service category.");
                 return;
             }
 
-            // E. Experience Validation: Must be 0 or more.
+            // Check if experience is typed correctly
             if (experience === "" || parseInt(experience) < 0) {
                 alert("Experience should be 0 or more.");
                 return;
             }
 
-            // F. Address Validation: Ensure address is not empty.
+            // Check if address is not too short
             if (address.length < 5) {
                 alert("Please provide a complete address.");
                 return;
             }
 
-            // G. Aadhar Photo Validation: Check if photo is uploaded.
+            // --- PHOTO UPLOAD LOGIC ---
+            // Get the ID card photo from the input
             const aadharFile = document.getElementById('aadharPhoto').files[0];
             if (!aadharFile) {
                 alert("Please upload your Aadhar Card photo.");
                 return;
             }
 
+            // Convert photo to a long text string (Base64) to send it to server
             let aadharBase64 = null;
             if (aadharFile) {
-                // Convert image to Base64 string
                 aadharBase64 = await fileToBase64(aadharFile);
             }
 
-            // H. Check if passwords match.
+            // Check if passwords match
             if (password !== confirmPassword) {
                 alert("Passwords do not match.");
                 return;
             }
 
-            // 4. Bundle data into an object
+            // Group all worker info together
             const data = {
                 full_name: name,
                 email: email,
@@ -95,9 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                // Send registration request to backend
+                // Send the info to the backend to create the account
                 await AuthAPI.registerWorker(data);
                 alert("Registration Successful! Login and check your verification status.");
+
+                // Redirect to login page
                 window.location.href = "worker_login.html";
 
             } catch (error) {
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- MOBILE MENU LOGIC ---
+    // Handles mobile menu buttons
     const menuToggle = document.getElementById('mobile-menu');
     const navLinks = document.querySelector('.nav-links');
     const navOverlay = document.getElementById('nav-overlay');
@@ -133,13 +133,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Helper function: Convert image file to a Base64 string
+// Helper function to turn a file into computer text (Base64)
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file); // Read the file
-        reader.onload = () => resolve(reader.result); // Resolve with the result
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
         reader.onerror = error => reject(error);
     });
 }
+
 

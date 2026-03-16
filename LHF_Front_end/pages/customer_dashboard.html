@@ -11,7 +11,7 @@
 </head>
 
 <body>
-  <!-- Dashboard Navigation -->
+  
   <nav class="dashboard-nav">
     <div class="container">
       <div class="nav-content">
@@ -23,13 +23,13 @@
             <span class="profile-icon"><i class="fas fa-user"></i></span>
             <span>My Profile</span>
           </button>
-          <a href="../../index.html" class="btn btn-logout">Logout</a>
+          <button class="btn btn-logout" onclick="logout()">Logout</button>
         </div>
       </div>
     </div>
   </nav>
 
-  <!-- Profile Sidebar -->
+  
   <div class="profile-sidebar" id="profileSidebar">
     <div class="profile-header">
       <h3><i class="fas fa-user"></i> My Profile</h3>
@@ -40,10 +40,10 @@
       <div class="profile-field">
         <label>Full Name</label>
 
-        <!-- view mode -->
+        
         <p id="viewName">Loading...</p>
 
-        <!-- edit mode -->
+        
         <input type="text" id="editName" style="display: none" />
       </div>
 
@@ -82,13 +82,13 @@
     </div>
   </div>
 
-  <!-- Overlay -->
+  
   <div class="overlay" id="overlay" onclick="toggleProfile()"></div>
 
-  <!-- Dashboard Content -->
+  
   <div class="dashboard-container">
     <div class="container">
-      <!-- Quick Stats -->
+      
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
@@ -99,9 +99,9 @@
         </div>
       </div>
 
-      <!-- Main Content -->
+      
       <div class="dashboard-main">
-        <!-- Book Service Section -->
+        
         <section class="content-section">
           <h3><i class="fas fa-edit"></i> Book a New Service</h3>
 
@@ -172,11 +172,11 @@
           </form>
         </section>
 
-        <!-- My Bookings Section -->
+        
         <section class="content-section">
           <h3><i class="fas fa-clipboard-list"></i> My Bookings</h3>
           <div id="bookings-container">
-            <!-- Dynamic bookings will be inserted here -->
+            
             <p id="no-bookings-msg" style="text-align: center; color: #666; margin-top: 20px;">No bookings found.</p>
           </div>
         </section>

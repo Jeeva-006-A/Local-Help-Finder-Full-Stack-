@@ -1,5 +1,5 @@
 :root {
-    /* Professional Light Palette (Synced with index.css) */
+    
     --customer-primary: #2563eb;
     --customer-dark: #1d4ed8;
     --worker-primary: #0d9488;
@@ -36,17 +36,17 @@ body {
     overflow-x: hidden;
 }
 
-/* Navigation */
+
 .landing-nav {
     position: fixed;
     top: 0;
     right: 0;
     width: 50%;
-    /* Only over the right pane */
+    
     padding: 2.5rem 4rem;
     display: flex;
     justify-content: flex-end;
-    /* Align links to right */
+    
     align-items: center;
     z-index: 1001;
     pointer-events: none;
@@ -55,7 +55,7 @@ body {
 
 .nav-brand {
     display: none;
-    /* Removed for auth pages as requested */
+    
 }
 
 .nav-links {
@@ -185,7 +185,7 @@ body {
     align-items: flex-start;
     justify-content: center;
     padding: 6rem 2rem 5rem;
-    /* Adjusted top padding for better vertical balance */
+    
     height: 100vh;
     overflow-y: auto;
     scroll-behavior: smooth;
@@ -201,7 +201,7 @@ body {
     box-shadow: var(--shadow-premium);
     transition: var(--transition);
     margin-top: 1rem;
-    /* Reduced margin-top to balance with container padding */
+    
 }
 
 .auth-box:hover {
@@ -274,7 +274,7 @@ h2 {
 
 .form-group input[type="file"] {
     padding: 1rem 1.25rem;
-    /* Matched padding with other input types for alignment */
+    
     background: #f8fafc;
     cursor: pointer;
     font-size: 0.85rem;
@@ -290,7 +290,7 @@ h2 {
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
 }
 
-/* Fix browser autocomplete blue background */
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -347,7 +347,7 @@ input:-webkit-autofill:active {
     transition: var(--transition);
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
     margin-top: 1.5rem;
-    /* Added margin to separate from checkbox/previous element */
+    
 }
 
 .btn-primary:hover {
@@ -453,7 +453,7 @@ input:-webkit-autofill:active {
 
     .auth-box {
         padding: 2rem 1.5rem;
-        /* Reduced padding on mobile to give more space for fields */
+        
         margin-top: 0;
     }
 }

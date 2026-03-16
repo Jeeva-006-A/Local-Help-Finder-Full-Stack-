@@ -1,42 +1,40 @@
-// This file handles all logic for the Customer Dashboard
-// It includes booking services and updating profiles.
 
-// 1. Get Customer ID from local storage
 const customerId = localStorage.getItem('user_id');
 const userType = localStorage.getItem('user_type');
 
-// Redirect to login page if user is not logged in as a customer
+// If not logged in, go to login page
 if (!customerId || userType !== 'customer') {
     window.location.href = 'customer_login.html';
 }
 
-// Run these functions when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    loadProfile();  // Load profile data
-    loadBookings(); // Load previous bookings
+    loadProfile();
+    loadBookings();
 
-    // Call 'bookService' function when the booking form is submitted
     const bookingForm = document.querySelector('.booking-form');
     if (bookingForm) {
         bookingForm.addEventListener('submit', bookService);
     }
 
-    // Set minimum date for the date input to 'today'
+    // --- DATE RESTRICTION LOGIC ---
+    // This code prevents selecting past dates
     const dateInput = document.getElementById("date");
     if (dateInput) {
-        const today = new Date().toISOString().split("T")[0];
+        // Get today's local date in YYYY-MM-DD format correctly
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const today = `${year}-${month}-${day}`;
         dateInput.min = today;
     }
 });
 
-// --- FUNCTIONS ---
-
-// A. Loads User profile
+// Load Customer Profile Details
 async function loadProfile() {
     try {
         const data = await CustomerAPI.getProfile(customerId);
 
-        // Display details in HTML elements
         const viewName = document.getElementById('viewName');
         const viewEmail = document.getElementById('viewEmail');
         const viewPhone = document.getElementById('viewPhone');
@@ -47,7 +45,6 @@ async function loadProfile() {
         if (viewPhone) viewPhone.innerText = data.phone;
         if (viewAddress) viewAddress.innerText = data.address;
 
-        // Fill input fields for edit mode
         const editName = document.getElementById('editName');
         const editPhone = document.getElementById('editPhone');
         const editAddress = document.getElementById('editAddress');
@@ -60,115 +57,26 @@ async function loadProfile() {
     }
 }
 
-// Helper function to convert file to Base64
-function toBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
-}
-
-// B. Books a new service
-async function bookService(event) {
-    event.preventDefault(); // Stop page refresh
-
-    if (!customerId) {
-        alert("Please login first.");
-        return;
-    }
-
-    // Get data from form inputs
-    const service = document.getElementById('service').value;
-    const problem = document.getElementById('problem').value;
-    const date = document.getElementById('date').value;
-    const time = document.getElementById('time').value;
-    const address = document.getElementById('address').value;
-    const phone = document.getElementById('bookingPhone')?.value || localStorage.getItem('user_phone');
-    const photoInput = document.getElementById('problemPhoto');
-
-    // --- VALIDATION LOGIC ---
-    // A. Check if required fields are empty
-    if (!service || !problem || !date || !time || !address) {
-        alert("Please fill all required fields - including address");
-        return;
-    }
-
-    // B. Problem description length check: Ensure it is not too short
-    if (problem.length < 10) {
-        alert("Please describe the problem in more detail (min 10 characters)");
-        return;
-    }
-
-    // C. Phone Validation: Check if it is exactly 10 digits.
-    const phoneRegex = /^\d{10}$/;
-    if (phone && !phoneRegex.test(phone)) {
-        alert("Phone number must be exactly 10 digits.");
-        return;
-    }
-
-    // D. Photo handling
-    let problemPhotoBase64 = null;
-    if (photoInput && photoInput.files.length > 0) {
-        try {
-            problemPhotoBase64 = await toBase64(photoInput.files[0]);
-        } catch (error) {
-            console.error("Error converting photo to base64:", error);
-        }
-    }
-
-    const data = {
-        service: service,
-        problem: problem,
-        date: date,
-        time: time,
-        address: address,
-        phone: phone,
-        problem_photo: problemPhotoBase64
-    };
-
-    // Disable button to show loading effect
-    const submitBtn = event.target.querySelector('button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Booking in progress...";
-    }
-
-    try {
-        await BookingsAPI.create(customerId, data);
-        alert("Service booked successfully! 🎉");
-        document.querySelector('.booking-form')?.reset();
-        loadBookings(); // Refresh the list
-    } catch (error) {
-        console.error("An error occurred during booking:", error);
-        alert("Booking failed: " + error.message);
-    } finally {
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Book Service Now";
-        }
-    }
-}
-
-// C. Fetch and display bookings
+// Load and Display Bookings
 async function loadBookings() {
+    const container = document.getElementById('bookings-container');
+    if (!container) return;
+
     try {
         const bookings = await BookingsAPI.getForCustomer(customerId);
-        renderBookings(bookings); // Render in the UI
+        renderBookings(bookings);
     } catch (error) {
         console.error("Error loading bookings:", error);
+        container.innerHTML = '<p style="text-align: center; color: red;">Error loading bookings.</p>';
     }
 }
 
-// Display bookings as cards in the UI
+// Create HTML for each booking card
 function renderBookings(bookings) {
     const container = document.getElementById('bookings-container');
     if (!container) return;
 
-    container.innerHTML = ''; // Clear container first
-
-    // Filter out cancelled bookings
+    // Filter out cancelled ones and sort by ID (newest first)
     const displayBookings = bookings.sort((a, b) => b.booking_id - a.booking_id).filter(b => b.status !== 'cancelled');
 
     if (displayBookings.length === 0) {
@@ -178,17 +86,16 @@ function renderBookings(bookings) {
     }
 
     updateStats(bookings);
+    container.innerHTML = ''; // Clear "No bookings" message
 
     displayBookings.forEach(booking => {
         const card = document.createElement('div');
         card.className = `booking-card ${booking.status === 'accepted' ? 'accepted-card' : ''}`;
 
-        // Status badge logic
         const statusText = booking.status === 'completed' ? 'Job Completed' :
             (booking.status === 'accepted' ? 'Accepted' : booking.status.toUpperCase());
         let statusBadge = `<span class="badge badge-${booking.status}">${statusText}</span>`;
 
-        // Card content creation
         card.innerHTML = `
             <div class="booking-header">
                 <h4><i class="fas fa-wrench"></i> ${booking.service.toUpperCase()}</h4>
@@ -219,14 +126,67 @@ function renderBookings(bookings) {
     });
 }
 
-// Update stats counts
+// Update Completed Jobs Count
 function updateStats(bookings) {
     const completedCount = bookings.filter(b => b.status === "completed").length;
     const completedEl = document.getElementById("completedCount");
     if (completedEl) completedEl.innerText = completedCount;
 }
 
-// Cancel Booking logic
+// Book a new service
+async function bookService(e) {
+    e.preventDefault();
+    const service = document.getElementById('service').value;
+    const problem = document.getElementById('problem').value;
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const address = document.getElementById('address').value;
+    const phone = document.getElementById('bookingPhone').value;
+    const photoInput = document.getElementById('problemPhoto');
+
+    // --- DATE VALIDATION ---
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const today = `${year}-${month}-${day}`;
+
+    if (date < today) {
+        alert("Please select today's date or a future date.");
+        return;
+    }
+
+    let photoBase64 = null;
+    if (photoInput && photoInput.files.length > 0) {
+        const file = photoInput.files[0];
+        photoBase64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    const bookingData = {
+        service,
+        problem,
+        date,
+        time,
+        address,
+        phone,
+        problem_photo: photoBase64
+    };
+
+    try {
+        await BookingsAPI.create(customerId, bookingData);
+        alert("Booking request sent successfully!");
+        e.target.reset();
+        loadBookings();
+    } catch (error) {
+        alert("Booking failed: " + error.message);
+    }
+}
+
+// Cancel a booking
 async function cancelBooking(bookingId) {
     if (!confirm("Are you sure you want to cancel?")) return;
 
@@ -239,35 +199,54 @@ async function cancelBooking(bookingId) {
     }
 }
 
-// Complete Booking logic
+// Complete a booking
 async function completeBooking(bookingId, workerId) {
     if (!confirm("Confirm that the job is done?")) return;
 
     try {
         await BookingsAPI.updateStatus(bookingId, 'completed', workerId);
-        alert("Job completed! ✅");
+        alert("Job completed!");
         loadBookings();
     } catch (error) {
         alert("Error: " + error.message);
     }
 }
 
-// Profile update Logic
+// Profile Sidebar Functions
+function toggleProfile() {
+    document.getElementById("profileSidebar")?.classList.toggle("active");
+    document.getElementById("overlay")?.classList.toggle("active");
+}
+
+function enableEdit() {
+    ["viewName", "viewPhone", "viewAddress"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = "none";
+    });
+    ["editName", "editPhone", "editAddress"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = "block";
+    });
+    const saveBtn = document.querySelector(".profile-save-btn");
+    if (saveBtn) saveBtn.style.display = "block";
+}
+
 async function saveProfile() {
     const fullName = document.getElementById('editName').value.trim();
     const phone = document.getElementById('editPhone').value.trim();
     const address = document.getElementById('editAddress').value.trim();
 
-    // --- VALIDATION LOGIC ---
+    if (!fullName || !phone || !address) {
+        alert("Please fill all fields!");
+        return;
+    }
 
-    // A. Name Validation: Only letters (a-z, A-Z) and spaces allowed. 
     const nameRegex = /^[a-zA-Z\s]+$/;
     if (!nameRegex.test(fullName)) {
         alert("Name should only contain letters!");
         return;
     }
 
-    // B. Phone Validation: Check if it is exactly 10 digits.
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(phone)) {
         alert("Phone number must be exactly 10 digits!");
@@ -283,37 +262,22 @@ async function saveProfile() {
     try {
         await CustomerAPI.updateProfile(customerId, data);
         alert("Profile updated successfully!");
-        location.reload(); // Refresh page to update details
+        location.reload();
     } catch (error) {
         alert("Update failed: " + error.message);
     }
 }
 
-// UI features toggle
-function toggleProfile() {
-    document.getElementById("profileSidebar")?.classList.toggle("active");
-    document.getElementById("overlay")?.classList.toggle("active");
+function logout() {
+    localStorage.clear();
+    window.location.href = '../../index.html';
 }
 
-function enableEdit() {
-    // Hide text, show inputs
-    ["viewName", "viewPhone", "viewAddress"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = "none";
-    });
-    ["editName", "editPhone", "editAddress"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = "block";
-    });
-    const saveBtn = document.querySelector(".profile-save-btn");
-    if (saveBtn) saveBtn.style.display = "block";
-}
-
-// Global Exports - For other components to use
+// Export to window for HTML access
 window.toggleProfile = toggleProfile;
 window.enableEdit = enableEdit;
 window.saveProfile = saveProfile;
 window.bookService = bookService;
 window.cancelBooking = cancelBooking;
 window.completeBooking = completeBooking;
-
+window.logout = logout;

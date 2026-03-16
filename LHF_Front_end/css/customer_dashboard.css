@@ -36,7 +36,7 @@ body {
     padding: 0 20px;
 }
 
-/* Navigation */
+
 .dashboard-nav {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
@@ -66,14 +66,14 @@ body {
     gap: 12px;
 }
 
-/* Right nav */
+
 .nav-right {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-/* Profile Button */
+
 .btn-profile {
     display: flex;
     align-items: center;
@@ -101,7 +101,7 @@ body {
     font-size: 1.2em;
 }
 
-/* Buttons */
+
 .btn {
     padding: 10px 20px;
     border: none;
@@ -167,7 +167,7 @@ body {
     font-size: 1em;
 }
 
-/* Mark as Done Button - Adjusted size */
+
 .btn-complete {
     background: #10b981;
     color: white;
@@ -190,7 +190,7 @@ body {
     box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3);
 }
 
-/* Cancel Button - Colored and Decent Size */
+
 .btn-cancel {
     background: #fee2e2;
     color: #dc2626;
@@ -215,7 +215,7 @@ body {
     grid-column: 1 / -1;
 }
 
-/* Profile Sidebar */
+
 .profile-sidebar {
     position: fixed;
     top: 0;
@@ -332,7 +332,7 @@ body {
     background: #7c3aed;
 }
 
-/* Overlay */
+
 .overlay {
     position: fixed;
     top: 0;
@@ -349,12 +349,12 @@ body {
     display: block;
 }
 
-/* Dashboard Container */
+
 .dashboard-container {
     padding: 40px 0;
 }
 
-/* Stats Grid */
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -401,14 +401,14 @@ body {
     color: var(--text-dark);
 }
 
-/* Dashboard Main */
+
 .dashboard-main {
     display: flex;
     flex-direction: column;
     gap: 30px;
 }
 
-/* Content Section */
+
 .content-section {
     background: white;
     padding: 2.5rem;
@@ -428,7 +428,7 @@ body {
     gap: 12px;
 }
 
-/* Booking Form */
+
 .booking-form {
     display: flex;
     flex-direction: column;
@@ -482,7 +482,7 @@ body {
     resize: vertical;
 }
 
-/* Booking Cards */
+
 .booking-card {
     background: #f8fafc;
     padding: 2.25rem;
@@ -577,7 +577,7 @@ body {
     flex-wrap: wrap;
 }
 
-/* Navbar icons */
+
 .dashboard-nav .nav-content h2 i {
     color: var(--primary-color);
 }
@@ -586,13 +586,13 @@ body {
     color: var(--primary-color);
 }
 
-/* Section headings */
+
 .content-section h3 i {
     color: var(--primary-color);
     margin-right: 8px;
 }
 
-/* Specific Service Icons Colors */
+
 .fa-faucet {
     color: #3182ce;
 }
@@ -605,7 +605,7 @@ body {
     color: #e53e3e;
 }
 
-/* Status icons matching badges */
+
 .badge-accepted i,
 .highlight-icon i {
     color: #38a169;
@@ -619,7 +619,7 @@ body {
     color: #3182ce;
 }
 
-/* Button icons */
+
 .btn-secondary i {
     color: white;
 }
@@ -628,22 +628,22 @@ body {
     color: inherit;
 }
 
-/* Cancel icon */
+
 .fa-times {
     color: #e53e3e;
 }
 
-/* View icon */
+
 .fa-eye {
     color: var(--primary-color);
 }
 
-/* Edit icon */
+
 .fa-edit {
     color: white;
 }
 
-/* Responsive Enhancements */
+
 @media (max-width: 1024px) {
     .container {
         padding: 0 16px;

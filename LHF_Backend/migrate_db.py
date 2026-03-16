@@ -6,7 +6,6 @@ from models.admin import Admin
 def migrate():
     print("Checking for missing columns...")
     with engine.connect() as conn:
-        # Add aadhar_photo if missing
         try:
             conn.execute(text("ALTER TABLE workers ADD COLUMN aadhar_photo VARCHAR"))
             conn.commit()
@@ -17,7 +16,6 @@ def migrate():
             else:
                 print(f"Error adding aadhar_photo: {e}")
 
-        # Add status if missing
         try:
             conn.execute(text("ALTER TABLE workers ADD COLUMN status VARCHAR DEFAULT 'pending'"))
             conn.commit()
@@ -28,7 +26,6 @@ def migrate():
             else:
                 print(f"Error adding status: {e}")
                 
-    # Also ensure Admin table is created
     Base.metadata.create_all(bind=engine)
     print("Migration check complete.")
 

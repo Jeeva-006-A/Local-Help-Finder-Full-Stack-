@@ -7,7 +7,7 @@
     --text-primary: #0f172a;
     --text-secondary: #64748b;
     --accent-color: #6366f1;
-    /* Modern Indigo */
+    
     --accent-light: #eef2ff;
     --success: #10b981;
     --danger: #ef4444;
@@ -37,7 +37,7 @@ body {
     min-height: 100vh;
 }
 
-/* Sidebar */
+
 .sidebar {
     width: 280px;
     background: #ffffff;
@@ -90,7 +90,7 @@ body {
     color: var(--accent-color);
 }
 
-/* Main Content */
+
 .main-content {
     flex: 1;
     padding: 2rem;
@@ -136,7 +136,7 @@ header {
     color: var(--accent-color);
 }
 
-/* Worker Table */
+
 .data-section {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -263,7 +263,7 @@ td {
     font-weight: 600;
 }
 
-/* Responsive Fixes */
+
 @media (max-width: 968px) {
     .dashboard-container {
         flex-direction: column;

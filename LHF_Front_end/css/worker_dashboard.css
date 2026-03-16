@@ -1,5 +1,5 @@
 :root {
-  /* Professional Light Palette - Worker Dashboard */
+  
   --brand-color: #0d9488;
   --brand-gradient: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
 
@@ -37,7 +37,7 @@ body {
   padding: 0 20px;
 }
 
-/* Navigation */
+
 .dashboard-nav {
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(12px);
@@ -73,7 +73,7 @@ body {
   gap: 1.5rem;
 }
 
-/* Profile Button */
+
 .btn-profile {
   display: flex;
   align-items: center;
@@ -93,7 +93,7 @@ body {
   border-color: var(--border);
 }
 
-/* Buttons */
+
 .btn {
   padding: 0.8rem 1.5rem;
   border: none;
@@ -146,7 +146,7 @@ body {
   color: white;
 }
 
-/* Profile Sidebar */
+
 .profile-sidebar {
   position: fixed;
   top: 0;
@@ -211,7 +211,7 @@ body {
   border-color: var(--brand-color);
 }
 
-/* Category Banner */
+
 .category-banner {
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   padding: 3.5rem;
@@ -272,7 +272,7 @@ body {
   font-size: 1.1rem;
 }
 
-/* Stats Grid */
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -324,7 +324,7 @@ body {
   color: var(--text-main);
 }
 
-/* Content Section */
+
 .content-section {
   background: var(--bg-card);
   padding: 2.5rem;
@@ -345,7 +345,7 @@ body {
   color: var(--brand-color);
 }
 
-/* Booking Cards */
+
 .booking-card {
   background: var(--bg-card);
   border-radius: var(--radius);

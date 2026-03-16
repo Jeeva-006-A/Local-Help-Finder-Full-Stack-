@@ -1,17 +1,15 @@
-// This code handles Customer registration
-// It collects name, email, phone, and address from the form.
-
+// This code handles signing up a new Customer
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. Get the signup form from HTML
+    // Find the signup form on the page
     const signupForm = document.getElementById('customerSignupForm');
 
     if (signupForm) {
-        // This function runs when the 'Register' button is clicked
+        // Runs when the user clicks the "Register" button
         signupForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Stop page reload
+            event.preventDefault(); // Stop the page from reloading
 
-            // 2. Get input values
+            // Get what the user typed in the boxes
             const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
@@ -19,43 +17,40 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
-            // --- VALIDATION LOGIC ---
-
-            // A. Name Validation: Only letters (a-z, A-Z) and spaces allowed.
-            // Numbers or special characters are not allowed.
+            // Check if the name only has letters
             const nameRegex = /^[a-zA-Z\s]+$/;
             if (!nameRegex.test(name)) {
                 alert("Name should only contain letters.");
                 return;
             }
 
-            // B. Email Validation: Check for a valid email format.
+            // Check if the email looks correct
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 alert("Please enter a valid email address.");
                 return;
             }
 
-            // C. Phone Validation: Check if it is exactly 10 digits.
+            // Check if the phone number is 10 digits
             const phoneRegex = /^\d{10}$/;
             if (!phoneRegex.test(phone)) {
                 alert("Phone number must be exactly 10 digits.");
                 return;
             }
 
-            // D. Address Validation: Ensure address is provided.
+            // Check if the address is not too short
             if (address.length < 5) {
                 alert("Please provide a complete address.");
                 return;
             }
 
-            // E. Check if passwords match.
+            // Check if the passwords match
             if (password !== confirmPassword) {
                 alert("Passwords do not match.");
                 return;
             }
 
-            // 3. Bundle data into an object
+            // Group all the info together
             const data = {
                 full_name: name,
                 email: email,
@@ -65,19 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                // Send registration request to backend (Call AuthAPI)
+                // Send the info to the backend to create the account
                 await AuthAPI.registerCustomer(data);
                 alert("Registration Successful! You can now login.");
 
-                // Redirect to login page
+                // Take the user to the login page
                 window.location.href = "customer_login.html";
 
             } catch (error) {
-                console.error("Signup Error details:", error);
-
-                // Show alert if the server is offline
+                console.error("Signup Error:", error);
                 if (error.message === "Failed to fetch") {
-                    alert("Backend server is offline! Please start main.py.");
+                    alert("Server is offline! Please start main.py.");
                 } else {
                     alert("Registration Failed: " + error.message);
                 }
@@ -85,8 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- MOBILE MENU LOGIC ---
-    // Controls the mobile menu buttons
+    // This part handles the menu button on mobile phones
     const menuToggle = document.getElementById('mobile-menu');
     const navLinks = document.querySelector('.nav-links');
     const navOverlay = document.getElementById('nav-overlay');
@@ -107,4 +99,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 

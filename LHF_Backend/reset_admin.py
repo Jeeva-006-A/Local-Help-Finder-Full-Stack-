@@ -4,12 +4,10 @@ from models.admin import Admin
 def reset_admin():
     db = SessionLocal()
     try:
-        # Check by new email
         admin = db.query(Admin).filter(Admin.username == "jeeva1629@gmail.com").first()
         if admin:
             admin.password = "Jeeva_1629_A"
         else:
-            # Also check if old 'Jeeva' exists and update it, otherwise create new
             old_admin = db.query(Admin).filter(Admin.username == "Jeeva").first()
             if old_admin:
                 old_admin.username = "jeeva1629@gmail.com"
