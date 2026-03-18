@@ -263,8 +263,14 @@ async function saveWorkerProfile() {
     }
 }
 
+function logout() {
+    localStorage.clear();
+    window.location.href = '../../index.html';
+}
+
 window.acceptJob = acceptJob;
 window.toggleProfile = toggleProfile;
 window.enableWorkerEdit = enableWorkerEdit;
 window.saveWorkerProfile = saveWorkerProfile;
 window.completeJob = completeJob;
+window.logout = logout;

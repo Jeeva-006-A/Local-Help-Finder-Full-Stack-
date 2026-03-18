@@ -70,7 +70,7 @@ body {
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 
@@ -265,11 +265,12 @@ body {
   font-size: 1.8rem;
   margin-bottom: 0.5rem;
   font-weight: 800;
+  line-height: 1.2;
 }
 
 .category-info p {
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
 }
 
 
@@ -430,10 +431,49 @@ body {
 }
 
 @media (max-width: 768px) {
+  .dashboard-nav {
+    padding: 1rem 0;
+  }
+
+  .nav-content {
+    flex-direction: column;
+    gap: 1.25rem;
+    text-align: center;
+  }
+
+  .nav-right {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .nav-content h2 {
+    font-size: 1.2rem;
+  }
+
   .category-banner {
     flex-direction: column;
     text-align: center;
-    padding: 2rem;
+    padding: 2.5rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .category-info h3 {
+    font-size: 1.5rem;
+  }
+
+  .category-info p {
+    font-size: 0.95rem;
+  }
+
+  .category-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .profile-sidebar {
@@ -445,5 +485,52 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+  }
+
+  .content-section {
+    padding: 1.5rem;
+  }
+
+  .booking-card {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-content h2 {
+    font-size: 1.1rem;
+  }
+
+  .btn-profile span:not(.profile-icon) {
+    display: none;
+  }
+
+  .btn-profile {
+    padding: 0.6rem;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+  }
+
+  .btn-profile .profile-icon {
+    margin: 0;
+  }
+
+  .category-banner {
+    padding: 2rem 1rem;
+  }
+
+  .stat-card {
+    padding: 1.25rem;
+  }
+
+  .stat-number {
+    font-size: 1.4rem;
+  }
+
+  .content-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
   }
 }
