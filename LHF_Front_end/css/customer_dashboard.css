@@ -483,10 +483,31 @@ body {
 }
 
 
+#bookings-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+    #bookings-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    #bookings-container {
+        grid-template-columns: 1fr;
+    }
+}
+
 .booking-card {
     background: #f8fafc;
-    padding: 2.25rem;
-    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     border-radius: 12px;
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: var(--transition);
@@ -496,7 +517,7 @@ body {
     background: white;
     box-shadow: var(--shadow-md);
     border-color: var(--primary-color);
-    transform: translateX(5px);
+    transform: translateY(-5px);
 }
 
 .accepted-card {
@@ -573,7 +594,8 @@ body {
 .booking-actions {
     display: flex;
     gap: 12px;
-    margin-top: 20px;
+    margin-top: auto;
+    padding-top: 16px;
     flex-wrap: wrap;
 }
 

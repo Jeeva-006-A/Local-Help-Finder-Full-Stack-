@@ -104,7 +104,7 @@ function renderBookings(bookings) {
             <div class="booking-body">
                 <p><strong>Problem:</strong> ${booking.problem}</p>
                 ${booking.problem_photo ? `
-                    <div class="problem-photo-container" style="margin: 15px 0; width: 100%; height: 200px; overflow: hidden; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <div class="problem-photo-container" style="margin: 15px 0; width: 100%; height: 150px; overflow: hidden; border-radius: 12px; border: 1px solid #e2e8f0;">
                         <img src="${booking.problem_photo}" alt="Problem Photo" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: transform 0.3s;" onclick="window.open('${booking.problem_photo}', '_blank')">
                     </div>
                 ` : ''}

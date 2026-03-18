@@ -408,14 +408,20 @@ input:-webkit-autofill:active {
     right: 0;
 }
 
+/* Responsive Design */
 @media (max-width: 1024px) {
     .landing-nav {
         width: 100%;
-        padding: 1rem 1.5rem;
+        padding: 1rem 2rem;
         background: var(--bg-main);
         border-bottom: 1px solid var(--border);
-        justify-content: center;
-        position: absolute;
+        justify-content: space-between;
+        position: fixed;
+        pointer-events: auto;
+    }
+
+    .nav-brand {
+        display: flex;
     }
 
     .nav-links {
@@ -423,19 +429,20 @@ input:-webkit-autofill:active {
         border: none;
         box-shadow: none;
         padding: 0;
+        gap: 1.5rem;
     }
 
     .auth-container {
         flex-direction: column;
         height: auto;
         overflow: visible;
+        margin-top: 70px; /* Offset for fixed nav */
     }
 
     .auth-left {
-        padding: 6rem 2rem 3rem;
+        padding: 4rem 2rem;
         min-height: auto;
         height: auto;
-        text-align: center;
         border-right: none;
         border-bottom: 1px solid var(--border);
     }
@@ -443,17 +450,171 @@ input:-webkit-autofill:active {
     .auth-left h1 {
         font-size: 3rem;
         letter-spacing: -1.5px;
+        margin-bottom: 1rem;
     }
 
     .auth-right {
-        padding: 5rem 1rem 2rem;
+        padding: 3rem 1.5rem;
         height: auto;
         overflow-y: visible;
     }
 
     .auth-box {
-        padding: 2rem 1.5rem;
-        
+        padding: 2.5rem 1.5rem;
         margin-top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none; /* Hide default nav links */
+    }
+
+    .menu-toggle {
+        display: block;
+        cursor: pointer;
+    }
+
+    .auth-left h1 {
+        font-size: 2.5rem;
+    }
+
+    .tagline {
+        font-size: 1.2rem;
+    }
+
+    .description {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-left {
+        display: none; /* Hide illustrative part on very small screens for focus */
+    }
+
+    .auth-container {
+        margin-top: 60px;
+    }
+
+    .auth-right {
+        padding: 1.5rem 1rem;
+    }
+
+    .auth-box {
+        padding: 1.5rem 1rem;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+    }
+
+    .back-link {
+        margin-bottom: 1.5rem;
+    }
+
+    .nav-brand {
+        font-size: 1.1rem;
+    }
+
+    h2 {
+        font-size: 1.6rem;
+    }
+
+    .subtitle {
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 0.85rem 1rem;
+    }
+
+    .btn-primary {
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .auth-footer {
+        margin-top: 1.5rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile Menu Toggle Helper */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 1002;
+}
+
+.menu-toggle .bar {
+    width: 25px;
+    height: 3px;
+    background: var(--text-main);
+    border-radius: 3px;
+    transition: var(--transition);
+}
+
+.menu-toggle.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.menu-toggle.active .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Nav Overlay */
+.nav-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+}
+
+.nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        height: 100vh;
+        background: white;
+        padding: 6rem 2rem;
+        z-index: 1001;
+        transition: var(--transition);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+        border-radius: 0;
+        gap: 1.5rem;
+    }
+
+    .nav-links.active {
+        right: 0;
+    }
+
+    .nav-links a {
+        font-size: 1.1rem;
+        color: var(--text-main);
     }
 }
