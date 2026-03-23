@@ -81,8 +81,20 @@
         </main>
     </div>
 
-    <script src="../js/connections/config.js"></script>
-    <script src="../js/connections/admin.js"></script>
+    <div id="workerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalWorkerName">Worker Details</h2>
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalContent">
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/admin.js"></script>
     <script>
         // Check Auth
         const adminUser = localStorage.getItem('admin_user');
@@ -91,10 +103,13 @@
         }
         document.getElementById('adminName').textContent = adminUser;
 
+        let allWorkersList = [];
+
         // Load All Workers
         async function loadWorkers() {
             try {
                 const workers = await AdminAPI.getAllWorkers();
+                allWorkersList = workers;
                 const tableBody = document.getElementById('workerTableBody');
                 const pendingCountEl = document.getElementById('pendingCount');
                 const totalCountEl = document.getElementById('totalCount');
@@ -130,9 +145,12 @@
                             </td>
                             <td>
                                 <div class="action-buttons">
+                                    <button class="btn-action" onclick="viewWorkerDetails(${worker.id})" title="View Full Details">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </button>
                                     ${worker.status === 'pending' ? `
                                         <button class="btn-verify" onclick="updateStatus(${worker.id}, 'verified')">Verify</button>
-                                        <button class="btn-reject" onclick="updateStatus(${worker.id}, 'rejected')">Reject</button>
+                                        <button class="btn-reject" onclick="updateStatus(${worker.id}, 'rejected')">Block</button>
                                     ` : `
                                         <button class="btn-reset" onclick="updateStatus(${worker.id}, 'pending')">Reset</button>
                                         ${worker.status === 'verified' ?
@@ -140,6 +158,9 @@
                             `<button class="btn-verify" onclick="updateStatus(${worker.id}, 'verified')">Unblock</button>`
                         }
                                     `}
+                                    <button class="btn-delete" onclick="deleteWorker(${worker.id})">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -148,6 +169,52 @@
                 });
             } catch (error) {
                 console.error("Error loading workers:", error);
+            }
+        }
+
+        function viewWorkerDetails(id) {
+            const worker = allWorkersList.find(w => w.id === id);
+            if (!worker) return;
+
+            document.getElementById('modalWorkerName').textContent = worker.full_name;
+            const content = `
+                <div class="detail-row">
+                    <span class="detail-label">Email Address</span>
+                    <span class="detail-value">${worker.email}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone Number</span>
+                    <span class="detail-value">${worker.phone || 'Not provided'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Category</span>
+                    <span class="detail-value">${worker.category}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Experience</span>
+                    <span class="detail-value">${worker.experience} Years</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Address</span>
+                    <span class="detail-value">${worker.address}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Current Status</span>
+                    <span class="detail-value">${worker.status.toUpperCase()}</span>
+                </div>
+            `;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('workerModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('workerModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('workerModal');
+            if (event.target == modal) {
+                closeModal();
             }
         }
 
@@ -168,6 +235,18 @@
                 loadWorkers();
             } catch (error) {
                 alert("Operation failed: " + error.message);
+            }
+        }
+
+        async function deleteWorker(workerId) {
+            if (!confirm("Are you sure you want to PERMANENTLY delete this worker? This action cannot be undone.")) return;
+
+            try {
+                await AdminAPI.deleteWorker(workerId);
+                alert("Worker deleted successfully.");
+                loadWorkers(); // This refreshes the details for the admin
+            } catch (error) {
+                alert("Deletion failed: " + error.message);
             }
         }
 

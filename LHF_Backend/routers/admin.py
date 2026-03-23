@@ -49,3 +49,13 @@ def update_worker_status(worker_id: int, data: WorkerStatusUpdate, db: Session =
     db.commit()
     return {"message": f"Worker status updated to {data.status} successfully!"}
 
+@router.delete("/workers/{worker_id}")
+def delete_worker(worker_id: int, db: Session = Depends(get_db)):
+    worker = db.query(Worker).filter(Worker.id == worker_id).first()
+    if not worker:
+        raise HTTPException(404, "Worker not found")
+    
+    db.delete(worker)
+    db.commit()
+    return {"message": "Worker deleted successfully!"}
+

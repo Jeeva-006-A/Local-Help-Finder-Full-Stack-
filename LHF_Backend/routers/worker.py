@@ -51,6 +51,9 @@ def login_worker(data: WorkerLogin, db: Session = Depends(get_db)):
     if not worker:
         raise HTTPException(401, "Invalid email or password")
 
+    if worker.status == "rejected":
+        raise HTTPException(403, "Your account has been blocked by the admin. Please contact support.")
+
     return {
         "worker_id": worker.id,
         "name": worker.full_name,

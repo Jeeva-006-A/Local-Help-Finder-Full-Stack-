@@ -27,4 +27,3 @@ class ContactAPI {
 }
 
 window.ContactAPI = ContactAPI;
-
