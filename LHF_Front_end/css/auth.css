@@ -1,5 +1,5 @@
 :root {
-    
+
     --customer-primary: #2563eb;
     --customer-dark: #1d4ed8;
     --worker-primary: #0d9488;
@@ -42,11 +42,11 @@ body {
     top: 0;
     right: 0;
     width: 50%;
-    
+
     padding: 2.5rem 4rem;
     display: flex;
     justify-content: flex-end;
-    
+
     align-items: center;
     z-index: 1001;
     pointer-events: none;
@@ -55,7 +55,7 @@ body {
 
 .nav-brand {
     display: none;
-    
+
 }
 
 .nav-links {
@@ -185,7 +185,7 @@ body {
     align-items: flex-start;
     justify-content: center;
     padding: 6rem 2rem 5rem;
-    
+
     height: 100vh;
     overflow-y: auto;
     scroll-behavior: smooth;
@@ -201,7 +201,7 @@ body {
     box-shadow: var(--shadow-premium);
     transition: var(--transition);
     margin-top: 1rem;
-    
+
 }
 
 .auth-box:hover {
@@ -274,7 +274,7 @@ h2 {
 
 .form-group input[type="file"] {
     padding: 1rem 1.25rem;
-    
+
     background: #f8fafc;
     cursor: pointer;
     font-size: 0.85rem;
@@ -347,7 +347,7 @@ input:-webkit-autofill:active {
     transition: var(--transition);
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
     margin-top: 1.5rem;
-    
+
 }
 
 .btn-primary:hover {
@@ -408,7 +408,7 @@ input:-webkit-autofill:active {
     right: 0;
 }
 
-/* Responsive Design */
+
 @media (max-width: 1024px) {
     .landing-nav {
         width: 100%;
@@ -436,7 +436,7 @@ input:-webkit-autofill:active {
         flex-direction: column;
         height: auto;
         overflow: visible;
-        margin-top: 70px; /* Offset for fixed nav */
+        margin-top: 70px;
     }
 
     .auth-left {
@@ -467,7 +467,7 @@ input:-webkit-autofill:active {
 
 @media (max-width: 768px) {
     .nav-links {
-        display: none; /* Hide default nav links */
+        display: none;
     }
 
     .menu-toggle {
@@ -490,7 +490,7 @@ input:-webkit-autofill:active {
 
 @media (max-width: 480px) {
     .auth-left {
-        display: none; /* Hide illustrative part on very small screens for focus */
+        display: none;
     }
 
     .auth-container {
@@ -546,7 +546,7 @@ input:-webkit-autofill:active {
     }
 }
 
-/* Mobile Menu Toggle Helper */
+
 .menu-toggle {
     display: none;
     flex-direction: column;
@@ -574,7 +574,7 @@ input:-webkit-autofill:active {
     transform: translateY(-8px) rotate(-45deg);
 }
 
-/* Nav Overlay */
+
 .nav-overlay {
     position: fixed;
     inset: 0;

@@ -25,7 +25,7 @@ def migrate():
                 print("status column already exists.")
             else:
                 print(f"Error adding status: {e}")
-                
+
     Base.metadata.create_all(bind=engine)
     print("Migration check complete.")
 

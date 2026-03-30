@@ -7,7 +7,7 @@
     --text-primary: #0f172a;
     --text-secondary: #64748b;
     --accent-color: #6366f1;
-    
+
     --accent-light: #eef2ff;
     --success: #10b981;
     --danger: #ef4444;
@@ -144,6 +144,40 @@ header {
     padding: 2rem;
 }
 
+.admin-tabs {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-item {
+    padding: 1rem 0.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: 600;
+    position: relative;
+    transition: var(--transition);
+}
+
+.tab-item:hover {
+    color: var(--accent-color);
+}
+
+.tab-item.active {
+    color: var(--accent-color);
+}
+
+.tab-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent-color);
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -206,7 +240,12 @@ td {
     background: #f1f5f9;
     color: #475569;
     border: 1px solid var(--border-color);
-    padding: 6px 12px;
+    width: 105px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.85rem;
@@ -217,41 +256,16 @@ td {
     background: #e2e8f0;
 }
 
-.btn-verify {
-    background: var(--success);
-    color: white;
-    border: none;
-    padding: 6px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-
-.btn-reject {
-    background: var(--danger);
-    color: white;
-    border: none;
-    padding: 6px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-
-.btn-reset {
-    background: #94a3b8;
-    color: white;
-    border: none;
-    padding: 6px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-
 .btn-delete {
     background: #000;
     color: white;
     border: none;
-    padding: 6px 14px;
+    width: 105px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.85rem;
@@ -262,9 +276,65 @@ td {
     background: #333;
 }
 
+.btn-tick {
+    background: #10b981;
+    color: white;
+    border: none;
+    width: 105px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: 0.2s;
+}
+
+.btn-tick:hover {
+    background: #059669;
+}
+
+.btn-wrong {
+    background: #ef4444;
+    color: white;
+    border: none;
+    width: 105px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: 0.2s;
+}
+
+.btn-wrong:hover {
+    background: #dc2626;
+}
+
+.btn-block {
+    background: #64748b;
+    color: white;
+    border: none;
+    width: 105px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
 .action-buttons {
     display: flex;
-    gap: 8px;
+    gap: 12px;
+    align-items: center;
 }
 
 .logout-btn {
@@ -367,7 +437,7 @@ td {
     }
 }
 
-/* Modal Styles */
+
 .modal {
     display: none;
     position: fixed;

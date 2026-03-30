@@ -20,6 +20,6 @@ def send_message(data: ContactCreate, db: Session = Depends(get_db)):
     new_message = ContactMessage(**data.model_dump())
     db.add(new_message)
     db.commit()
-    
+
     return {"message": "Message successfully saved! We will respond soon."}
 

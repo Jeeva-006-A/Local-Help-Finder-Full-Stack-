@@ -1,11 +1,11 @@
 :root {
-    
+
     --customer-primary: #2563eb;
     --customer-dark: #1d4ed8;
     --worker-primary: #0d9488;
     --worker-dark: #0f766e;
 
-    
+
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
     --text-main: #0f172a;
@@ -15,7 +15,7 @@
     --accent: var(--customer-primary);
     --accent-dark: var(--customer-dark);
 
-    
+
     --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     --radius-lg: 16px;
     --radius-xl: 24px;

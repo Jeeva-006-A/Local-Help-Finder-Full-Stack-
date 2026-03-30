@@ -29,7 +29,7 @@ cloudinary.config(
 @router.post("/register")
 def register_worker(data: WorkerCreate, db: Session = Depends(get_db)):
     worker_data = data.model_dump()
-    
+
     if data.aadhar_photo:
         try:
             upload_result = cloudinary.uploader.upload(data.aadhar_photo, folder="lhf_aadhar_cards")
@@ -51,8 +51,8 @@ def login_worker(data: WorkerLogin, db: Session = Depends(get_db)):
     if not worker:
         raise HTTPException(401, "Invalid email or password")
 
-    if worker.status == "rejected":
-        raise HTTPException(403, "Your account has been blocked by the admin. Please contact support.")
+    if worker.status in ["rejected", "blocked"]:
+        raise HTTPException(403, "Your account has been restricted by the admin. Please contact support.")
 
     return {
         "worker_id": worker.id,
@@ -72,7 +72,7 @@ def update_worker_profile(
     if not worker:
         raise HTTPException(status_code=404, detail="Worker not found")
 
-    update_data = data.model_dump()  
+    update_data = data.model_dump()
     worker.full_name = update_data["full_name"]
     worker.phone = update_data["phone"]
     worker.address = update_data["address"]

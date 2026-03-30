@@ -12,6 +12,6 @@ class BookingCreate(BaseModel):
     problem_photo: Optional[str] = None
 
 class BookingStatusUpdate(BaseModel):
-    status: str                 
+    status: str
     worker_id: Optional[int] = None
 

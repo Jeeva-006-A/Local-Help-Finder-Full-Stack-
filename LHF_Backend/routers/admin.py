@@ -29,7 +29,7 @@ def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
             db.add(new_admin)
             db.commit()
             return {"message": "Admin account created and logged in!", "username": data.username}
-        
+
         raise HTTPException(401, "Invalid admin credentials (Incorrect username or password)")
 
     return {"message": "Admin login successful!", "username": admin.username}
@@ -44,7 +44,7 @@ def update_worker_status(worker_id: int, data: WorkerStatusUpdate, db: Session =
     worker = db.query(Worker).filter(Worker.id == worker_id).first()
     if not worker:
         raise HTTPException(404, "Worker not found (Incorrect Worker ID)")
-    
+
     worker.status = data.status
     db.commit()
     return {"message": f"Worker status updated to {data.status} successfully!"}
@@ -54,7 +54,7 @@ def delete_worker(worker_id: int, db: Session = Depends(get_db)):
     worker = db.query(Worker).filter(Worker.id == worker_id).first()
     if not worker:
         raise HTTPException(404, "Worker not found")
-    
+
     db.delete(worker)
     db.commit()
     return {"message": "Worker deleted successfully!"}

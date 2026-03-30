@@ -11,19 +11,19 @@
 
 <body>
     <div class="dashboard-container">
-        
+
         <aside class="sidebar">
             <div class="brand">LHF Admin</div>
             <ul class="nav-links">
                 <li><a href="#" class="active"><i class="fas fa-user-check"></i> Verifications</a></li>
-                
+
             </ul>
             <a href="../../index.html" class="logout-btn" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>
         </aside>
 
-        
+
         <main class="main-content">
             <header>
                 <div>
@@ -47,19 +47,13 @@
             </div>
 
             <div class="data-section">
-                <div class="section-header"
-                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                    <h3>Service Providers Management</h3>
-                    <div class="filters">
-                        <select id="statusFilter" onchange="loadWorkers()"
-                            style="padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary);">
-                            <option value="all">All Workers</option>
-                            <option value="pending">Pending Only</option>
-                            <option value="verified">Verified Only</option>
-                            <option value="rejected">Rejected/Blocked</option>
-                        </select>
-                    </div>
+                <div class="admin-tabs">
+                    <div class="tab-item active" onclick="switchTab('pending', this)">Pending</div>
+                    <div class="tab-item" onclick="switchTab('verified', this)">Approved</div>
+                    <div class="tab-item" onclick="switchTab('rejected', this)">Rejected</div>
+                    <div class="tab-item" onclick="switchTab('blocked', this)">Blocked</div>
                 </div>
+
                 <div style="overflow-x: auto;">
                     <table id="workerTable">
                         <thead>
@@ -73,7 +67,7 @@
                             </tr>
                         </thead>
                         <tbody id="workerTableBody">
-                            
+
                         </tbody>
                     </table>
                 </div>
@@ -88,7 +82,7 @@
                 <span class="close-modal" onclick="closeModal()">&times;</span>
             </div>
             <div id="modalContent">
-                
+
             </div>
         </div>
     </div>
@@ -104,6 +98,16 @@
         document.getElementById('adminName').textContent = adminUser;
 
         let allWorkersList = [];
+        let currentTab = 'pending';
+
+        function switchTab(status, element) {
+            // Update active tab UI
+            document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
+            element.classList.add('active');
+
+            currentTab = status;
+            loadWorkers();
+        }
 
         // Load All Workers
         async function loadWorkers() {
@@ -113,20 +117,19 @@
                 const tableBody = document.getElementById('workerTableBody');
                 const pendingCountEl = document.getElementById('pendingCount');
                 const totalCountEl = document.getElementById('totalCount');
-                const filter = document.getElementById('statusFilter').value;
 
                 tableBody.innerHTML = '';
 
+                // Stats
                 const pendingCount = workers.filter(w => w.status === 'pending').length;
                 pendingCountEl.textContent = pendingCount;
                 totalCountEl.textContent = workers.length;
 
-                const filteredWorkers = filter === 'all'
-                    ? workers
-                    : workers.filter(w => w.status === filter);
+                // Filter by current tab
+                const filteredWorkers = workers.filter(w => w.status === currentTab);
 
                 if (filteredWorkers.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 3rem;">No ${filter !== 'all' ? filter : ''} workers found</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 3rem;">No ${currentTab} workers found</td></tr>`;
                     return;
                 }
 
@@ -148,17 +151,29 @@
                                     <button class="btn-action" onclick="viewWorkerDetails(${worker.id})" title="View Full Details">
                                         <i class="fas fa-info-circle"></i> Details
                                     </button>
+
                                     ${worker.status === 'pending' ? `
-                                        <button class="btn-verify" onclick="updateStatus(${worker.id}, 'verified')">Verify</button>
-                                        <button class="btn-reject" onclick="updateStatus(${worker.id}, 'rejected')">Block</button>
-                                    ` : `
-                                        <button class="btn-reset" onclick="updateStatus(${worker.id}, 'pending')">Reset</button>
-                                        ${worker.status === 'verified' ?
-                            `<button class="btn-reject" onclick="updateStatus(${worker.id}, 'rejected')">Block</button>` :
-                            `<button class="btn-verify" onclick="updateStatus(${worker.id}, 'verified')">Unblock</button>`
-                        }
-                                    `}
-                                    <button class="btn-delete" onclick="deleteWorker(${worker.id})">
+                                        <button class="btn-tick" onclick="updateStatus(${worker.id}, 'verified')" title="Verify">
+                                            <i class="fas fa-check"></i> Verify
+                                        </button>
+                                        <button class="btn-wrong" onclick="updateStatus(${worker.id}, 'rejected')" title="Reject">
+                                            <i class="fas fa-times"></i> Reject
+                                        </button>
+                                    ` : ''}
+
+                                    ${worker.status === 'verified' ? `
+                                        <button class="btn-wrong" onclick="updateStatus(${worker.id}, 'blocked')" title="Block Account">
+                                            <i class="fas fa-ban"></i> Block
+                                        </button>
+                                    ` : ''}
+
+                                    ${worker.status === 'blocked' ? `
+                                        <button class="btn-tick" onclick="updateStatus(${worker.id}, 'verified')" title="Unblock Account">
+                                            <i class="fas fa-undo"></i> Unblock
+                                        </button>
+                                    ` : ''}
+
+                                    <button class="btn-delete" onclick="deleteWorker(${worker.id})" title="Delete Worker">
                                         <i class="fas fa-trash"></i> Delete
                                     </button>
                                 </div>

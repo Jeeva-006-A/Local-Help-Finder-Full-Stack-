@@ -32,7 +32,7 @@ def create_booking(
     db: Session = Depends(get_db)
 ):
     booking_data = data.model_dump()
-    
+
     if data.problem_photo:
         try:
             upload_result = cloudinary.uploader.upload(data.problem_photo, folder="lhf_booking_problems")
@@ -74,7 +74,7 @@ def update_booking_status(
     if update_data["status"] == "accepted":
          if update_data.get("worker_id") is None:
              raise HTTPException(400, "Worker ID required to accept job")
-    
+
     booking.worker_id = update_data["worker_id"]
 
     db.commit()
