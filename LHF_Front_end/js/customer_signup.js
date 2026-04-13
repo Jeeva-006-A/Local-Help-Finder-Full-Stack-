@@ -59,6 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 password: password
             };
 
+            const submitBtn = signupForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+            }
+
             try {
 
                 await AuthAPI.registerCustomer(data);
@@ -69,6 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (error) {
                 console.error("Signup Error:", error);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Sign Up';
+                }
                 if (error.message === "Failed to fetch") {
                     alert("Server is offline! Please start main.py.");
                 } else {

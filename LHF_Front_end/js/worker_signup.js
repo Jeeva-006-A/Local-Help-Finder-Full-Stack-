@@ -92,6 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 aadhar_photo: aadharBase64
             };
 
+            const submitBtn = signupForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+            }
+
             try {
 
                 await AuthAPI.registerWorker(data);
@@ -102,6 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (error) {
                 console.error("Signup Error:", error);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Register as Worker';
+                }
                 if (error.message === "Failed to fetch") {
                     alert("Backend server is offline! Please start main.py.");
                 } else {

@@ -136,8 +136,8 @@ function renderBookings(bookings) {
                 </div>
             </div>
             <div class="booking-actions">
-                ${booking.status === 'pending' ? `<button onclick="cancelBooking(${booking.booking_id})" class="btn-cancel">Cancel</button>` : ''}
-                ${booking.status === 'accepted' ? `<button onclick="completeBooking(${booking.booking_id}, ${booking.worker?.id})" class="btn-complete"><i class="fas fa-check-circle"></i> Mark as Done</button>` : ''}
+                ${booking.status === 'pending' ? `<button onclick="cancelBooking(event, ${booking.booking_id})" class="btn-cancel">Cancel</button>` : ''}
+                ${booking.status === 'accepted' ? `<button onclick="completeBooking(event, ${booking.booking_id}, ${booking.worker?.id})" class="btn-complete"><i class="fas fa-check-circle"></i> Mark as Done</button>` : ''}
             </div>
         `;
 
@@ -157,6 +157,12 @@ async function bookService(e) {
 
     e.preventDefault();
 
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
+    }
+
     const service = document.getElementById('service').value;
     const problem = document.getElementById('problem').value;
     const date = document.getElementById('date').value;
@@ -175,6 +181,10 @@ async function bookService(e) {
 
     if (date < today) {
         alert("Please select today's date or a future date.");
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Book Service Now';
+        }
         return;
     }
 
@@ -211,13 +221,23 @@ async function bookService(e) {
     } catch (error) {
 
         alert("Booking failed: " + error.message);
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Book Service Now';
+        }
     }
 }
 
 
-async function cancelBooking(bookingId) {
+async function cancelBooking(event, bookingId) {
 
     if (!confirm("Are you sure you want to cancel?")) return;
+
+    const btn = event.currentTarget;
+    const originalContent = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Cancelling...';
 
     try {
 
@@ -227,13 +247,20 @@ async function cancelBooking(bookingId) {
         loadBookings();
     } catch (error) {
         alert("Error: " + error.message);
+        btn.disabled = false;
+        btn.innerHTML = originalContent;
     }
 }
 
 
-async function completeBooking(bookingId, workerId) {
+async function completeBooking(event, bookingId, workerId) {
 
     if (!confirm("Confirm that the job is done?")) return;
+
+    const btn = event.currentTarget;
+    const originalContent = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Completing...';
 
     try {
 
@@ -243,6 +270,8 @@ async function completeBooking(bookingId, workerId) {
         loadBookings();
     } catch (error) {
         alert("Error: " + error.message);
+        btn.disabled = false;
+        btn.innerHTML = originalContent;
     }
 }
 

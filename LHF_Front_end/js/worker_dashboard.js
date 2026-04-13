@@ -160,7 +160,7 @@ function renderIncomingJobs(jobs) {
                 <p><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> ${job.address}</p>
                 <p><i class="fas fa-calendar-alt"></i> <strong>Date:</strong> ${job.date} ${job.time}</p>
                 <div class="booking-actions" style="margin-top: 20px;">
-                    <button class="btn btn-accept" style="width: 100%;" onclick="acceptJob(${job.booking_id})">Accept Job </button>
+                    <button class="btn btn-accept" style="width: 100%;" onclick="acceptJob(event, ${job.booking_id})">Accept Job </button>
                 </div>
             </div>
         `;
@@ -170,9 +170,14 @@ function renderIncomingJobs(jobs) {
 }
 
 
-async function acceptJob(bookingId) {
+async function acceptJob(event, bookingId) {
 
     if (!confirm("Are you sure you want to accept this job?")) return;
+
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Accepting...';
 
     try {
 
@@ -183,12 +188,19 @@ async function acceptJob(bookingId) {
         loadHistory();
     } catch (error) {
         alert("Error: " + error.message);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
     }
 }
 
 
-async function completeJob(bookingId) {
+async function completeJob(event, bookingId) {
     if (!confirm("Confirm that the job is completed?")) return;
+
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Completing...';
 
     try {
 
@@ -198,6 +210,8 @@ async function completeJob(bookingId) {
         loadHistory();
     } catch (error) {
         alert("Error: " + error.message);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
     }
 }
 
