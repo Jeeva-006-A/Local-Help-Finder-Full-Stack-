@@ -1,8 +1,8 @@
 
 
-const workerId = localStorage.getItem('user_id');
-const userType = localStorage.getItem('user_type');
-const workerCategory = localStorage.getItem('worker_category');
+let workerId = localStorage.getItem('user_id');
+let userType = localStorage.getItem('user_type');
+let workerCategory = localStorage.getItem('worker_category');
 
 
 if (!workerId || userType !== 'worker') {
@@ -21,13 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const workerStatus = localStorage.getItem('worker_status');
     if (workerStatus === 'pending') {
-        const jobsContainer = document.getElementById('incoming-jobs');
+        const category = (workerCategory || '').toLowerCase();
+        const jobsContainer = document.getElementById(`${category}-jobs-container`);
         if (jobsContainer) {
-
+            document.getElementById(`${category}Jobs`).style.display = 'block';
             jobsContainer.innerHTML = `
-                <div class="card" style="border: 1px solid #ff9800; background: rgba(255, 152, 0, 0.1); padding: 20px; text-align: center;">
+                <div class="card" style="border: 2px dashed #ff9800; background: rgba(255, 152, 0, 0.05); padding: 30px; text-align: center; border-radius: 12px;">
+                    <i class="fas fa-user-clock" style="font-size: 3rem; color: #ff9800; margin-bottom: 15px;"></i>
                     <h3 style="color: #ff9800;">Account Under Verification</h3>
-                    <p>Please wait while the admin verifies your details.</p>
+                    <p style="color: #666;">Your professional profile is currently being reviewed by our admin team. You will be able to accept job requests once your account is verified.</p>
                 </div>
             `;
         }
@@ -98,7 +100,11 @@ async function loadProfile() {
 
         document.getElementById('editWName').value = data.full_name;
         document.getElementById('editWPhone').value = data.phone;
-        document.getElementById('editWAddress').value = data.address;
+        if (data.category && data.category !== workerCategory) {
+            workerCategory = data.category;
+            localStorage.setItem('worker_category', data.category);
+            setupCategoryUI();
+        }
 
     } catch (error) {
         console.error("Profile load error:", error);
@@ -118,7 +124,7 @@ async function loadIncomingJobs() {
 
 
 function renderIncomingJobs(jobs) {
-
+    if (!workerCategory) return;
     const category = workerCategory.toLowerCase();
     const section = document.getElementById(`${category}Jobs`);
     const container = document.getElementById(`${category}-jobs-container`);

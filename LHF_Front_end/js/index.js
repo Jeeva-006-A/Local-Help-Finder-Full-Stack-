@@ -24,8 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     localStorage.setItem('user_id', data.customer_id);
                     localStorage.setItem('user_type', 'customer');
-                    localStorage.setItem('user_name', data.full_name);
-                    localStorage.setItem('user_phone', data.phone);
+                    localStorage.setItem('user_name', data.name);
 
                     alert("Customer Login Successful!");
 
@@ -78,8 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 localStorage.setItem('user_id', data.worker_id);
                 localStorage.setItem('user_type', 'worker');
-                localStorage.setItem('user_name', data.full_name);
-                localStorage.setItem('user_phone', data.phone);
+                localStorage.setItem('user_name', data.name);
+                localStorage.setItem('worker_category', data.category);
+                localStorage.setItem('worker_status', data.status);
 
                 alert("Worker Login Successful!");
 
