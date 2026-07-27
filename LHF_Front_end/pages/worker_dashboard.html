@@ -118,6 +118,24 @@
 
       <div class="stats-grid">
         <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-wifi"></i></div>
+          <div class="stat-info">
+            <h3>Availability</h3>
+            <p class="stat-number" id="onlineStatus">Offline</p>
+            <label class="availability-toggle" for="availabilityToggle">
+              <input type="checkbox" id="availabilityToggle" aria-label="Toggle availability" />
+              <span class="availability-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+          <div class="stat-info">
+            <h3>Today's Earnings</h3>
+            <p class="stat-number" id="todayEarnings">₹0</p>
+          </div>
+        </div>
+        <div class="stat-card">
           <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
           <div class="stat-info">
             <h3>Total Jobs</h3>
@@ -184,6 +202,8 @@
   <script src="../js/config.js"></script>
   <script src="../js/worker.js"></script>
   <script src="../js/bookings.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../js/alerts.js"></script>
   <script src="../js/worker_dashboard.js"></script>
 </body>
 

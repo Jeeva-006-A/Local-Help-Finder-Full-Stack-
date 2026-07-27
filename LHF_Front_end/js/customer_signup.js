@@ -20,33 +20,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const nameRegex = /^[a-zA-Z\s]+$/;
             if (!nameRegex.test(name)) {
-                alert("Name should only contain letters.");
+                Alerts.warning("Name should only contain letters.");
                 return;
             }
 
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                alert("Please enter a valid email address.");
+                Alerts.warning("Please enter a valid email address.");
                 return;
             }
 
 
             const phoneRegex = /^\d{10}$/;
             if (!phoneRegex.test(phone)) {
-                alert("Phone number must be exactly 10 digits.");
+                Alerts.warning("Phone number must be exactly 10 digits.");
                 return;
             }
 
 
             if (address.length < 5) {
-                alert("Please provide a complete address.");
+                Alerts.warning("Please provide a complete address.");
                 return;
             }
 
 
             if (password !== confirmPassword) {
-                alert("Passwords do not match.");
+                Alerts.warning("Passwords do not match.");
                 return;
             }
 
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
 
                 await AuthAPI.registerCustomer(data);
-                alert("Registration Successful! You can now login.");
+                await Alerts.success("Registration Successful! You can now login.");
 
 
                 window.location.href = "customer_login.html";
@@ -80,9 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     submitBtn.innerHTML = 'Sign Up';
                 }
                 if (error.message === "Failed to fetch") {
-                    alert("Server is offline! Please start main.py.");
+                    Alerts.error("Server is offline! Please start main.py.");
                 } else {
-                    alert("Registration Failed: " + error.message);
+                    Alerts.error("Registration Failed: " + error.message);
                 }
             }
         });

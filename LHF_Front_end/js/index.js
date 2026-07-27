@@ -22,11 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     const data = await AuthAPI.loginCustomer(identifier, password);
 
 
+                    localStorage.setItem('token', data.access_token);
                     localStorage.setItem('user_id', data.customer_id);
                     localStorage.setItem('user_type', 'customer');
                     localStorage.setItem('user_name', data.name);
 
-                    alert("Customer Login Successful!");
+                    await Alerts.success("Customer Login Successful!");
 
                     window.location.href = './LHF_Front_end/pages/customer_dashboard.html';
                 } catch (customerError) {
@@ -39,10 +40,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         const adminResult = await AdminAPI.login(identifier, password);
 
 
+                        localStorage.setItem('token', adminResult.access_token);
+                        localStorage.setItem('admin_id', adminResult.admin_id);
                         localStorage.setItem('admin_user', adminResult.username);
                         localStorage.setItem('user_type', 'admin');
 
-                        alert("Admin Login Successful!");
+                        await Alerts.success("Admin Login Successful!");
 
                         window.location.href = './LHF_Front_end/pages/admin_dashboard.html';
                     } else {
@@ -53,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
 
                 console.error("Login Error:", error);
-                alert("Login failed: " + error.message);
+                Alerts.error("Login failed: " + error.message);
             }
         });
     }
@@ -75,19 +78,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await AuthAPI.loginWorker(email, password);
 
 
+                localStorage.setItem('token', data.access_token);
                 localStorage.setItem('user_id', data.worker_id);
                 localStorage.setItem('user_type', 'worker');
                 localStorage.setItem('user_name', data.name);
                 localStorage.setItem('worker_category', data.category);
                 localStorage.setItem('worker_status', data.status);
 
-                alert("Worker Login Successful!");
+                await Alerts.success("Worker Login Successful!");
 
                 window.location.href = './LHF_Front_end/pages/worker_dashboard.html';
             } catch (error) {
 
                 console.error("Worker Login Error:", error);
-                alert("Login failed: " + error.message);
+                Alerts.error("Login failed: " + error.message);
             }
         });
     }

@@ -1,3 +1,7 @@
 {
-    "liveServer.settings.port": 5507
+    "liveServer.settings.port": 5507,
+    "files.exclude": {
+        ".build/**": true,
+        "**/.output/**": true
+    }
 }

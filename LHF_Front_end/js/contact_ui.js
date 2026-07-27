@@ -16,24 +16,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const nameRegex = /^[a-zA-Z\s]+$/;
             if (!nameRegex.test(name)) {
-                alert("Name should only contain letters.");
+                Alerts.warning("Name should only contain letters.");
                 return;
             }
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                alert("Please enter a valid email address.");
+                Alerts.warning("Please enter a valid email address.");
                 return;
             }
 
             const phoneRegex = /^\d{10}$/;
             if (!phoneRegex.test(phone)) {
-                alert("Phone number must be exactly 10 digits.");
+                Alerts.warning("Phone number must be exactly 10 digits.");
                 return;
             }
 
             if (!subject || !message) {
-                alert("Subject and Message are required.");
+                Alerts.warning("Subject and Message are required.");
                 return;
             }
 
@@ -48,13 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 await ContactAPI.sendMessage(data);
 
-                alert("Message sent! We will contact you soon.");
+                Alerts.success("Message sent! We will contact you soon.");
 
                 contactForm.reset();
 
             } catch (error) {
                 console.error("Message error:", error);
-                alert("Failed to send message: " + error.message);
+                Alerts.error("Failed to send message: " + error.message);
             }
         });
     }

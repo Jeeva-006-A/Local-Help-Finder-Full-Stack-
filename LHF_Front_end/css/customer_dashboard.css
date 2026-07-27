@@ -564,6 +564,11 @@ body {
     color: #2a4365;
 }
 
+.badge-cancelled {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
 .booking-body p {
     margin: 8px 0;
     color: var(--text-dark);
@@ -639,6 +644,10 @@ body {
 
 .badge-completed i {
     color: #3182ce;
+}
+
+.badge-cancelled i {
+    color: #e53e3e;
 }
 
 

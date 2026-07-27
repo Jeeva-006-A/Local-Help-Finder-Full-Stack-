@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('password').value;
 
             if (!identifier || !password) {
-                alert("Email and Password are required!");
+                Alerts.warning("Email and Password are required!");
                 return;
             }
 
@@ -30,8 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('user_id', result.customer_id);
                     localStorage.setItem('user_name', result.name);
                     localStorage.setItem('user_type', 'customer');
+                    localStorage.setItem('token', result.access_token);
 
-                    alert("Customer Login Successful!");
+                    await Alerts.success("Customer Login Successful!");
 
                     window.location.href = "customer_dashboard.html";
                     return;
@@ -47,8 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         localStorage.setItem('admin_user', adminResult.username);
                         localStorage.setItem('user_type', 'admin');
+                        localStorage.setItem('token', adminResult.access_token);
 
-                        alert("Admin Login Successful!");
+                        await Alerts.success("Admin Login Successful!");
                         window.location.href = "admin_dashboard.html";
                         return;
                     } else {
@@ -59,9 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Login Error details:", error);
 
                 if (error.message === "Failed to fetch") {
-                    alert("Backend server is offline! Please start main.py.");
+                    Alerts.error("Backend server is offline! Please start main.py.");
                 } else {
-                    alert("Login failed: " + error.message);
+                    Alerts.error("Login failed: " + error.message);
                 }
             }
         });

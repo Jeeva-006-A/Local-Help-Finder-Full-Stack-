@@ -15,8 +15,14 @@ let currentFilter = 'all';
 
 document.addEventListener('DOMContentLoaded', () => {
     loadProfile();
+    loadStats();
     loadIncomingJobs();
     loadHistory();
+
+    const availabilityToggle = document.getElementById('availabilityToggle');
+    if (availabilityToggle) {
+        availabilityToggle.addEventListener('change', updateAvailability);
+    }
 
 
     const workerStatus = localStorage.getItem('worker_status');
@@ -77,6 +83,63 @@ function setupCategoryUI() {
     }
 }
 
+async function loadStats() {
+    try {
+        const stats = await WorkerAPI.getStats(workerId);
+        updateAvailabilityUI(stats.is_online);
+        
+        const earningsEl = document.getElementById('todayEarnings');
+        if (earningsEl) earningsEl.innerText = `₹${stats.today_earnings}`;
+        
+        const totalJobsEl = document.getElementById('totalJobs');
+        if (totalJobsEl) totalJobsEl.innerText = stats.total_jobs_completed;
+        
+        const newRequestsEl = document.getElementById('newRequests');
+        if (newRequestsEl) newRequestsEl.innerText = stats.pending_requests;
+        
+        const acceptedJobsEl = document.getElementById('acceptedJobs');
+        if (acceptedJobsEl) acceptedJobsEl.innerText = stats.accepted_jobs;
+        
+        const completedJobsEl = document.getElementById('completedJobs');
+        if (completedJobsEl) completedJobsEl.innerText = stats.completed_jobs;
+    } catch (error) {
+        console.error("Stats load error:", error);
+    }
+}
+
+function updateAvailabilityUI(isOnline) {
+    const onlineStatusEl = document.getElementById('onlineStatus');
+    if (onlineStatusEl) {
+        onlineStatusEl.innerText = isOnline ? 'Online' : 'Offline';
+        onlineStatusEl.style.color = isOnline ? 'var(--success)' : 'var(--danger)';
+    }
+
+    const availabilityToggle = document.getElementById('availabilityToggle');
+    if (availabilityToggle) {
+        availabilityToggle.checked = isOnline;
+    }
+}
+
+async function updateAvailability(event) {
+    const availabilityToggle = event.currentTarget;
+    const isOnline = availabilityToggle.checked;
+
+    updateAvailabilityUI(isOnline);
+    availabilityToggle.disabled = true;
+
+    try {
+        const worker = await WorkerAPI.updateAvailability(workerId, isOnline);
+        updateAvailabilityUI(worker.is_online);
+        loadIncomingJobs();
+        loadStats();
+    } catch (error) {
+        updateAvailabilityUI(!isOnline);
+        Alerts.error("Availability update failed: " + error.message);
+    } finally {
+        availabilityToggle.disabled = false;
+    }
+}
+
 
 async function loadProfile() {
     try {
@@ -134,11 +197,6 @@ function renderIncomingJobs(jobs) {
 
     section.style.display = 'block';
 
-
-    const newRequestsCount = document.getElementById('newRequests');
-    if (newRequestsCount) newRequestsCount.innerText = jobs.length;
-
-
     container.innerHTML = '';
 
 
@@ -159,8 +217,9 @@ function renderIncomingJobs(jobs) {
                 ` : ''}
                 <p><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> ${job.address}</p>
                 <p><i class="fas fa-calendar-alt"></i> <strong>Date:</strong> ${job.date} ${job.time}</p>
-                <div class="booking-actions" style="margin-top: 20px;">
-                    <button class="btn btn-accept" style="width: 100%;" onclick="acceptJob(event, ${job.booking_id})">Accept Job </button>
+                <div class="booking-actions" style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button class="btn btn-accept" style="flex: 1;" onclick="acceptJob(this, ${job.booking_id})">Accept Job</button>
+                    <button class="btn btn-decline" style="flex: 1;" onclick="rejectJob(this, ${job.booking_id})">Reject</button>
                 </div>
             </div>
         `;
@@ -170,11 +229,9 @@ function renderIncomingJobs(jobs) {
 }
 
 
-async function acceptJob(event, bookingId) {
+async function acceptJob(btn, bookingId) {
+    if (!await Alerts.confirm("Are you sure you want to accept this job?")) return;
 
-    if (!confirm("Are you sure you want to accept this job?")) return;
-
-    const btn = event.currentTarget;
     const originalText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = 'Accepting...';
@@ -182,37 +239,148 @@ async function acceptJob(event, bookingId) {
     try {
 
         await BookingsAPI.updateStatus(bookingId, 'accepted', parseInt(workerId));
-        alert("Job accepted successfully!");
+        Alerts.success("Job accepted successfully!");
 
-        loadIncomingJobs();
-        loadHistory();
+        await loadIncomingJobs();
+        await loadHistory();
     } catch (error) {
-        alert("Error: " + error.message);
+        Alerts.error("Error: " + error.message);
         btn.disabled = false;
         btn.innerHTML = originalText;
     }
 }
 
 
-async function completeJob(event, bookingId) {
-    if (!confirm("Confirm that the job is completed?")) return;
+async function rejectJob(btn, bookingId) {
+    const { value: rejectionReason } = await Swal.fire({
+        title: 'Reject Booking',
+        text: 'Please provide a reason for rejecting this booking.',
+        input: 'textarea',
+        inputPlaceholder: 'Enter rejection reason',
+        inputAttributes: { 'aria-label': 'Rejection reason' },
+        showCancelButton: true,
+        confirmButtonText: 'Reject Booking',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
+        inputValidator: (value) => {
+            if (!value || !value.trim()) {
+                return 'Rejection reason is required.';
+            }
+        }
+    });
 
-    const btn = event.currentTarget;
+    if (rejectionReason === undefined) return;
+
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Rejecting...';
+
+    try {
+        await BookingsAPI.updateStatus(bookingId, 'rejected', parseInt(workerId), {
+            rejection_reason: rejectionReason.trim()
+        });
+        Alerts.success("Booking rejected.");
+
+        await loadIncomingJobs();
+        await loadHistory();
+    } catch (error) {
+        Alerts.error("Error: " + error.message);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+
+async function updateJobProgress(btn, bookingId, status, message) {
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Updating...';
+
+    try {
+        await BookingsAPI.updateStatus(bookingId, status, parseInt(workerId));
+        Alerts.success(message);
+
+        await loadHistory();
+    } catch (error) {
+        Alerts.error("Error: " + error.message);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+
+async function completeJob(btn, bookingId) {
+    const { value: price } = await Swal.fire({
+        title: 'Complete Service',
+        text: 'Enter the final service price.',
+        input: 'number',
+        inputAttributes: {
+            min: '0.01',
+            step: '0.01',
+            inputmode: 'decimal',
+            'aria-label': 'Service price'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Complete Service',
+        confirmButtonColor: Alerts.getPrimaryColor(),
+        cancelButtonColor: '#64748b',
+        inputValidator: (value) => {
+            const numericPrice = Number(value);
+            if (!value || !Number.isFinite(numericPrice) || numericPrice <= 0) {
+                return 'Enter a positive service price.';
+            }
+        }
+    });
+
+    if (price === undefined) return;
+
     const originalText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = 'Completing...';
 
     try {
 
-        await BookingsAPI.updateStatus(bookingId, 'completed', parseInt(workerId));
-        alert("Job completed! Good job.");
+        await BookingsAPI.updateStatus(bookingId, 'completed', parseInt(workerId), {
+            price: Number(price)
+        });
+        Alerts.success("Job completed! Good job.");
 
-        loadHistory();
+        await loadHistory();
     } catch (error) {
-        alert("Error: " + error.message);
+        Alerts.error("Error: " + error.message);
         btn.disabled = false;
         btn.innerHTML = originalText;
     }
+}
+
+
+function formatBookingStatus(status) {
+    const statusLabels = {
+        accepted: 'Accepted',
+        on_the_way: 'On The Way',
+        service_started: 'Service Started',
+        completed: 'Job Completed',
+        rejected: 'Rejected'
+    };
+
+    return statusLabels[status] || status.toUpperCase();
+}
+
+
+function getBookingAction(booking) {
+    if (booking.status === 'accepted') {
+        return `<button class="btn btn-accept" onclick="updateJobProgress(this, ${booking.booking_id}, 'on_the_way', 'Marked as on the way!')">On The Way</button>`;
+    }
+
+    if (booking.status === 'on_the_way') {
+        return `<button class="btn btn-accept" onclick="updateJobProgress(this, ${booking.booking_id}, 'service_started', 'Service started!')">Start Service</button>`;
+    }
+
+    if (booking.status === 'service_started') {
+        return `<button class="btn btn-accept" onclick="completeJob(this, ${booking.booking_id})">Complete Service</button>`;
+    }
+
+    return '';
 }
 
 
@@ -223,13 +391,10 @@ async function loadHistory() {
         const historyList = document.getElementById('historyList');
         const historySection = document.getElementById('jobHistory');
 
-
         if (historyList) historyList.innerHTML = '';
 
-
-        document.getElementById('acceptedJobs').innerText = bookings.filter(b => b.status === 'accepted').length;
-        document.getElementById('completedJobs').innerText = bookings.filter(b => b.status === 'completed').length;
-        document.getElementById('totalJobs').innerText = bookings.length;
+        // Removed manual stat setting, loadStats handles it.
+        await loadStats();
 
 
         document.querySelectorAll('.stat-card').forEach(c => c.style.borderColor = 'var(--border)');
@@ -240,7 +405,9 @@ async function loadHistory() {
 
         const filteredBookings = currentFilter === 'all'
             ? bookings
-            : bookings.filter(b => b.status === currentFilter);
+            : bookings.filter(b => currentFilter === 'accepted'
+                ? ['accepted', 'on_the_way', 'service_started'].includes(b.status)
+                : b.status === currentFilter);
 
 
         if (filteredBookings.length > 0) {
@@ -253,7 +420,7 @@ async function loadHistory() {
                 card.innerHTML = `
                    <div class="booking-header">
                       <h4>${b.service.toUpperCase()}</h4>
-                      <span class="badge badge-${b.status}">${b.status === 'completed' ? 'Job Completed' : (b.status === 'accepted' ? 'Accepted' : b.status.toUpperCase())}</span>
+                      <span class="badge badge-${b.status}">${formatBookingStatus(b.status)}</span>
                    </div>
                    <div class="booking-body">
                       <p><strong><i class="fas fa-user"></i> Customer:</strong> ${b.customer?.name || '---'}</p>
@@ -266,6 +433,9 @@ async function loadHistory() {
                         </div>
                       ` : ''}
                    </div>
+                   ${b.status === 'rejected' ? `<p><strong>Rejection Reason:</strong> ${b.rejection_reason || '---'}</p>` : ''}
+                   ${b.status === 'completed' ? `<p><strong>Service Price:</strong> ₹${b.price ?? '---'}</p>` : ''}
+                   ${getBookingAction(b) ? `<div class="booking-actions" style="margin-top: 20px;">${getBookingAction(b)}</div>` : ''}
 
                 `;
 
@@ -315,14 +485,14 @@ async function saveWorkerProfile() {
 
     const nameRegex = /^[a-zA-Z\s]+$/;
     if (!nameRegex.test(fullName)) {
-        alert("Name should only contain letters.");
+        Alerts.warning("Name should only contain letters.");
         return;
     }
 
 
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(phone)) {
-        alert("Phone number must be exactly 10 digits.");
+        Alerts.warning("Phone number must be exactly 10 digits.");
         return;
     }
 
@@ -336,11 +506,11 @@ async function saveWorkerProfile() {
     try {
 
         await WorkerAPI.updateProfile(workerId, data);
-        alert("Profile updated!");
+        await Alerts.success("Profile updated!");
 
         location.reload();
     } catch (e) {
-        alert("Update failed: " + e.message);
+        Alerts.error("Update failed: " + e.message);
     }
 }
 
@@ -352,6 +522,8 @@ function logout() {
 
 
 window.acceptJob = acceptJob;
+window.rejectJob = rejectJob;
+window.updateJobProgress = updateJobProgress;
 window.toggleProfile = toggleProfile;
 window.enableWorkerEdit = enableWorkerEdit;
 window.saveWorkerProfile = saveWorkerProfile;

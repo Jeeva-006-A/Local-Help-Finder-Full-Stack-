@@ -12,12 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                alert("Please enter a valid email address.");
+                Alerts.warning("Please enter a valid email address.");
                 return;
             }
 
             if (!password) {
-                alert("Password is required.");
+                Alerts.warning("Password is required.");
                 return;
             }
 
@@ -29,17 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('user_type', 'worker');
                 localStorage.setItem('worker_category', result.category);
                 localStorage.setItem('worker_status', result.status);
+                localStorage.setItem('token', result.access_token);
 
-                alert("Worker Login Successful!");
+                await Alerts.success("Worker Login Successful!");
                 window.location.href = "worker_dashboard.html";
 
             } catch (error) {
                 console.error("Login Error:", error);
 
                 if (error.message === "Failed to fetch") {
-                    alert("Backend server is offline! Please start main.py.");
+                    Alerts.error("Backend server is offline! Please start main.py.");
                 } else {
-                    alert("Login failed: " + error.message);
+                    Alerts.error("Login failed: " + error.message);
                 }
             }
         });

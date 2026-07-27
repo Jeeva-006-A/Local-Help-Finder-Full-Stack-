@@ -24,39 +24,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const nameRegex = /^[a-zA-Z\s]+$/;
             if (!nameRegex.test(name)) {
-                alert("Name should only contain letters.");
+                Alerts.warning("Name should only contain letters.");
                 return;
             }
 
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                alert("Please enter a valid email address.");
+                Alerts.warning("Please enter a valid email address.");
                 return;
             }
 
 
             const phoneRegex = /^\d{10}$/;
             if (!phoneRegex.test(phone)) {
-                alert("Phone number must be exactly 10 digits.");
+                Alerts.warning("Phone number must be exactly 10 digits.");
                 return;
             }
 
 
             if (!category) {
-                alert("Please select a service category.");
+                Alerts.warning("Please select a service category.");
                 return;
             }
 
 
             if (experience === "" || parseInt(experience) < 0) {
-                alert("Experience should be 0 or more.");
+                Alerts.warning("Experience should be 0 or more.");
                 return;
             }
 
 
             if (address.length < 5) {
-                alert("Please provide a complete address.");
+                Alerts.warning("Please provide a complete address.");
                 return;
             }
 
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const aadharFile = document.getElementById('aadharPhoto').files[0];
             if (!aadharFile) {
-                alert("Please upload your Aadhar Card photo.");
+                Alerts.warning("Please upload your Aadhar Card photo.");
                 return;
             }
 
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
             if (password !== confirmPassword) {
-                alert("Passwords do not match.");
+                Alerts.warning("Passwords do not match.");
                 return;
             }
 
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
 
                 await AuthAPI.registerWorker(data);
-                alert("Registration Successful! Login and check your verification status.");
+                await Alerts.success("Registration Successful! Login and check your verification status.");
 
 
                 window.location.href = "worker_login.html";
@@ -113,9 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     submitBtn.innerHTML = 'Register as Worker';
                 }
                 if (error.message === "Failed to fetch") {
-                    alert("Backend server is offline! Please start main.py.");
+                    Alerts.error("Backend server is offline! Please start main.py.");
                 } else {
-                    alert("Registration Failed: " + error.message);
+                    Alerts.error("Registration Failed: " + error.message);
                 }
             }
         });

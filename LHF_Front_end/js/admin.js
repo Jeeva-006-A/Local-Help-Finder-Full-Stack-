@@ -13,6 +13,11 @@ class AdminAPI {
 
 
         if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                localStorage.clear();
+                window.location.href = '../../index.html';
+                throw new Error("Unauthorized - Please log in again");
+            }
             const error = await response.json();
             throw new Error(error.detail || `HTTP error! status: ${response.status}`);
         }
@@ -25,10 +30,17 @@ class AdminAPI {
 
     static async getAllWorkers() {
 
-        const response = await fetch(`${API_BASE_URL}/admin/workers/all`);
+        const response = await fetch(`${API_BASE_URL}/admin/workers/all`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
 
 
         if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                localStorage.clear();
+                window.location.href = '../../index.html';
+                throw new Error("Unauthorized - Please log in again");
+            }
             const error = await response.json();
             throw new Error(error.detail || `HTTP error! status: ${response.status}`);
         }
@@ -43,12 +55,20 @@ class AdminAPI {
 
         const response = await fetch(`${API_BASE_URL}/admin/workers/${workerId}/status`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
             body: JSON.stringify({ status: status })
         });
 
 
         if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                localStorage.clear();
+                window.location.href = '../../index.html';
+                throw new Error("Unauthorized - Please log in again");
+            }
             const error = await response.json();
             throw new Error(error.detail || `HTTP error! status: ${response.status}`);
         }
@@ -62,11 +82,17 @@ class AdminAPI {
     static async deleteWorker(workerId) {
 
         const response = await fetch(`${API_BASE_URL}/admin/workers/${workerId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
 
 
         if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                localStorage.clear();
+                window.location.href = '../../index.html';
+                throw new Error("Unauthorized - Please log in again");
+            }
             const error = await response.json();
             throw new Error(error.detail || `HTTP error! status: ${response.status}`);
         }

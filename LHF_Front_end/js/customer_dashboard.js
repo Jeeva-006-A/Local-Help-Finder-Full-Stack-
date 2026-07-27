@@ -110,7 +110,8 @@ function renderBookings(bookings) {
 
 
         const statusText = booking.status === 'completed' ? 'Job Completed' :
-            (booking.status === 'accepted' ? 'Accepted' : booking.status.toUpperCase());
+            (booking.status === 'accepted' ? 'Accepted' : 
+            booking.status === 'cancelled' ? 'Cancelled' : booking.status.toUpperCase());
         let statusBadge = `<span class="badge badge-${booking.status}">${statusText}</span>`;
 
 
@@ -127,6 +128,9 @@ function renderBookings(bookings) {
                     </div>
                 ` : ''}
                 <p><strong>Time:</strong> ${booking.date} at ${booking.time}</p>
+                ${booking.status === 'cancelled' && booking.cancellation_reason ? `
+                    <p style="color: #ef4444; margin-top: 10px;"><strong><i class="fas fa-times-circle"></i> Cancellation Reason:</strong> ${booking.cancellation_reason}</p>
+                ` : ''}
                 <div class="worker-details" style="${booking.worker ? 'margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1;' : ''}">
                     <p><strong>Worker:</strong> ${booking.worker ? booking.worker.name : 'Waiting for worker...'}</p>
                     ${booking.worker ? `
@@ -136,8 +140,8 @@ function renderBookings(bookings) {
                 </div>
             </div>
             <div class="booking-actions">
-                ${booking.status === 'pending' ? `<button onclick="cancelBooking(event, ${booking.booking_id})" class="btn-cancel">Cancel</button>` : ''}
-                ${booking.status === 'accepted' ? `<button onclick="completeBooking(event, ${booking.booking_id}, ${booking.worker?.id})" class="btn-complete"><i class="fas fa-check-circle"></i> Mark as Done</button>` : ''}
+                ${(booking.status === 'pending' || booking.status === 'accepted') ? `<button onclick="cancelBooking(this, ${booking.booking_id})" class="btn-cancel">Cancel</button>` : ''}
+                ${booking.status === 'accepted' ? `<button onclick="completeBooking(this, ${booking.booking_id}, ${booking.worker?.id})" class="btn-complete"><i class="fas fa-check-circle"></i> Mark as Done</button>` : ''}
             </div>
         `;
 
@@ -180,7 +184,7 @@ async function bookService(e) {
     const today = `${year}-${month}-${day}`;
 
     if (date < today) {
-        alert("Please select today's date or a future date.");
+        Alerts.warning("Please select today's date or a future date.");
         if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = 'Book Service Now';
@@ -213,14 +217,14 @@ async function bookService(e) {
     try {
 
         await BookingsAPI.create(customerId, bookingData);
-        alert("Booking request sent successfully!");
+        Alerts.success("Booking request sent successfully!");
 
         e.target.reset();
 
         loadBookings();
     } catch (error) {
 
-        alert("Booking failed: " + error.message);
+        Alerts.error("Booking failed: " + error.message);
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
@@ -230,34 +234,49 @@ async function bookService(e) {
 }
 
 
-async function cancelBooking(event, bookingId) {
+async function cancelBooking(btn, bookingId) {
 
-    if (!confirm("Are you sure you want to cancel?")) return;
+    const { value: cancellationReason } = await Swal.fire({
+        title: 'Cancel Booking',
+        text: 'Please provide a reason for cancelling this booking.',
+        input: 'textarea',
+        inputPlaceholder: 'Enter cancellation reason',
+        inputAttributes: { 'aria-label': 'Cancellation reason' },
+        showCancelButton: true,
+        confirmButtonText: 'Cancel Booking',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
+        inputValidator: (value) => {
+            if (!value || !value.trim()) {
+                return 'Cancellation reason is required.';
+            }
+        }
+    });
 
-    const btn = event.currentTarget;
+    if (cancellationReason === undefined) return;
+
     const originalContent = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = 'Cancelling...';
 
     try {
 
-        await BookingsAPI.updateStatus(bookingId, 'cancelled', null);
-        alert("Booking cancelled.");
+        await BookingsAPI.cancelBooking(bookingId, cancellationReason.trim());
+        Alerts.success("Booking cancelled.");
 
         loadBookings();
     } catch (error) {
-        alert("Error: " + error.message);
+        Alerts.error("Error: " + error.message);
         btn.disabled = false;
         btn.innerHTML = originalContent;
     }
 }
 
 
-async function completeBooking(event, bookingId, workerId) {
+async function completeBooking(btn, bookingId, workerId) {
 
-    if (!confirm("Confirm that the job is done?")) return;
+    if (!await Alerts.confirm("Confirm that the job is done?")) return;
 
-    const btn = event.currentTarget;
     const originalContent = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = 'Completing...';
@@ -265,11 +284,11 @@ async function completeBooking(event, bookingId, workerId) {
     try {
 
         await BookingsAPI.updateStatus(bookingId, 'completed', workerId);
-        alert("Job completed!");
+        Alerts.success("Job completed!");
 
         loadBookings();
     } catch (error) {
-        alert("Error: " + error.message);
+        Alerts.error("Error: " + error.message);
         btn.disabled = false;
         btn.innerHTML = originalContent;
     }
@@ -307,21 +326,21 @@ async function saveProfile() {
 
 
     if (!fullName || !phone || !address) {
-        alert("Please fill all fields!");
+        Alerts.warning("Please fill all fields!");
         return;
     }
 
 
     const nameRegex = /^[a-zA-Z\s]+$/;
     if (!nameRegex.test(fullName)) {
-        alert("Name should only contain letters!");
+        Alerts.warning("Name should only contain letters!");
         return;
     }
 
 
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(phone)) {
-        alert("Phone number must be exactly 10 digits!");
+        Alerts.warning("Phone number must be exactly 10 digits!");
         return;
     }
 
@@ -335,11 +354,11 @@ async function saveProfile() {
     try {
 
         await CustomerAPI.updateProfile(customerId, data);
-        alert("Profile updated successfully!");
+        await Alerts.success("Profile updated successfully!");
 
         location.reload();
     } catch (error) {
-        alert("Update failed: " + error.message);
+        Alerts.error("Update failed: " + error.message);
     }
 }
 

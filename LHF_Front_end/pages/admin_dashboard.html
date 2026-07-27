@@ -89,6 +89,8 @@
 
     <script src="../js/config.js"></script>
     <script src="../js/admin.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/alerts.js"></script>
     <script>
         // Check Auth
         const adminUser = localStorage.getItem('admin_user');
@@ -235,33 +237,33 @@
 
         function viewAadhar(url) {
             if (!url || url === 'null') {
-                alert("No ID photo uploaded.");
+                Alerts.warning("No ID photo uploaded.");
                 return;
             }
             window.open(url, '_blank');
         }
 
         async function updateStatus(workerId, status) {
-            if (!confirm(`Are you sure you want to change status to ${status}?`)) return;
+            if (!await Alerts.confirm(`Are you sure you want to change status to ${status}?`)) return;
 
             try {
                 await AdminAPI.updateWorkerStatus(workerId, status);
-                alert(`Status updated to ${status}`);
+                Alerts.success(`Status updated to ${status}`);
                 loadWorkers();
             } catch (error) {
-                alert("Operation failed: " + error.message);
+                Alerts.error("Operation failed: " + error.message);
             }
         }
 
         async function deleteWorker(workerId) {
-            if (!confirm("Are you sure you want to PERMANENTLY delete this worker? This action cannot be undone.")) return;
+            if (!await Alerts.confirm("Are you sure you want to PERMANENTLY delete this worker? This action cannot be undone.", "Delete")) return;
 
             try {
                 await AdminAPI.deleteWorker(workerId);
-                alert("Worker deleted successfully.");
+                Alerts.success("Worker deleted successfully.");
                 loadWorkers(); // This refreshes the details for the admin
             } catch (error) {
-                alert("Deletion failed: " + error.message);
+                Alerts.error("Deletion failed: " + error.message);
             }
         }
 
