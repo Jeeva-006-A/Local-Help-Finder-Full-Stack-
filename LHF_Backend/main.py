@@ -1,3 +1,8 @@
+import os
+from dotenv import load_dotenv
+
+# Load .env variables before anything else
+load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter, Request

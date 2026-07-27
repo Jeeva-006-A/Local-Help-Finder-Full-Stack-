@@ -19,3 +19,6 @@ class WorkerUpdate(BaseModel):
     full_name: str
     phone: str
     address: str
+
+class WorkerAvailabilityUpdate(BaseModel):
+    is_online: bool

@@ -1,12 +1,14 @@
-
 import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+
+load_dotenv(os.path.join(os.path.dirname(__file__), '../.env'))
 
 DB_URL = os.getenv("DATABASE_URL")
 
 if not DB_URL:
-    DB_URL = "postgresql+psycopg2://postgres.rrlkbnrbhvrurlnecfqx:Jeeva_2910_A@aws-1-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require"
+    raise ValueError("DATABASE_URL environment variable is missing")
 
 if DB_URL and DB_URL.startswith("postgres://"):
     DB_URL = DB_URL.replace("postgres://", "postgresql://", 1)

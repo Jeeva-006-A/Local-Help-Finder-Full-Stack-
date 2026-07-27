@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 from db.database import Base
 
@@ -16,6 +16,7 @@ class Worker(Base):
     password = Column(String)
     aadhar_photo = Column(String, nullable=True)
     status = Column(String, default="pending")
+    is_online = Column(Boolean, default=False)
 
     bookings = relationship("Booking", back_populates="worker")
 

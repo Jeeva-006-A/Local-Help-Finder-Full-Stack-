@@ -6,3 +6,7 @@ psycopg2-binary
 email-validator
 cloudinary
 python-multipart
+python-dotenv
+python-jose
+passlib
+bcrypt==3.2.2

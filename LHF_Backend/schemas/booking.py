@@ -14,4 +14,10 @@ class BookingCreate(BaseModel):
 class BookingStatusUpdate(BaseModel):
     status: str
     worker_id: Optional[int] = None
+    rejection_reason: Optional[str] = None
+    cancellation_reason: Optional[str] = None
+    price: Optional[float] = None
+
+class BookingCancelRequest(BaseModel):
+    cancellation_reason: str
 
